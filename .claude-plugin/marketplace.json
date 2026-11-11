@@ -1,0 +1,39 @@
+{
+  "name": "matchcut",
+  "description": "matchcut: agent skills for product films that look made by a studio.",
+  "owner": {
+    "name": "Komet Studios"
+  },
+  "plugins": [
+    {
+      "name": "matchcut",
+      "description": "Product films from your agent: the real UI recorded at a smooth 60 fps and cut with a virtual camera, a title intro made in code that match-cuts into the product, an original score written in code or a song prompt for any music generator fitted to the cut, and image and video prompts for a generated opening if you want one (MiniMax, Grok, Seedance, Veo, Kling, Wan, Runway, Luma, LTX).",
+      "version": "0.1.0",
+      "source": "./",
+      "skills": [
+        "./skills/matchcut",
+        "./skills/keyframes",
+        "./skills/clip-prompts",
+        "./skills/ui-reel",
+        "./skills/score"
+      ],
+      "author": {
+        "name": "Komet Studios"
+      },
+      "license": "MIT",
+      "keywords": [
+        "video",
+        "remotion",
+        "demo-video",
+        "launch-video",
+        "image-to-video",
+        "prompting",
+        "agent-skills",
+        "screen-recording",
+        "soundtrack"
+      ],
+      "homepage": "https://github.com/abundantbeing/matchcut",
+      "repository": "https://github.com/abundantbeing/matchcut"
+    }
+  ]
+}

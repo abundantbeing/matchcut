@@ -1,0 +1,22 @@
+{
+  "name": "matchcut-reel",
+  "private": true,
+  "description": "A real-product reel: recorded takes under a virtual camera, captions, an end card, its own score.",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "still": "remotion still src/index.ts Reel out/still.png --frame=120 --scale=0.5",
+    "render": "remotion render src/index.ts Reel out/reel.mp4 --crf=16",
+    "preview": "remotion render src/index.ts Reel out/reel.mp4 --crf=16 && ffmpeg -y -loglevel error -i out/reel.mp4 -vf scale=1280:720:flags=lanczos -c:v libx264 -crf 22 -preset slow -c:a aac -b:a 160k -map_metadata -1 -movflags +faststart out/reel-720.mp4",
+    "check": "tsc --noEmit && node check-tl.mjs"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.529",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "4.0.529"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.6.0"
+  }
+}

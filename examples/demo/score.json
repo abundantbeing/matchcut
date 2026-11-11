@@ -1,0 +1,290 @@
+{
+  "total": 36.0,
+  "track": "music/song-a.mp3",
+  "track_at": 0.06,
+  "track_curve": [
+    [
+      0,
+      0
+    ],
+    [
+      32.0,
+      0
+    ],
+    [
+      32.6,
+      5
+    ],
+    [
+      36.0,
+      5
+    ]
+  ],
+  "fx_gain": 1.35,
+  "fade": 0.4,
+  "rms_db": -17.8,
+  "key": "D",
+  "mode": "dorian",
+  "bpm": 112,
+  "palette": "keys",
+  "progression": [
+    0,
+    6,
+    3,
+    4
+  ],
+  "sections": [
+    {
+      "from": 0,
+      "to": 7.55,
+      "energy": 0
+    },
+    {
+      "from": 7.55,
+      "to": 13.56,
+      "energy": 1
+    },
+    {
+      "from": 13.56,
+      "to": 15.82,
+      "energy": 2
+    },
+    {
+      "from": 15.82,
+      "to": 24.56,
+      "energy": 3
+    },
+    {
+      "from": 24.56,
+      "to": 27.56,
+      "energy": 2
+    },
+    {
+      "from": 27.56,
+      "to": 32.06,
+      "energy": 3
+    }
+  ],
+  "hits": [
+    2.06,
+    4.06,
+    15.82,
+    24.56
+  ],
+  "stops": [
+    7.55
+  ],
+  "risers": [
+    {
+      "to": 7.55,
+      "dur": 2.4
+    },
+    {
+      "to": 15.82,
+      "dur": 2.6
+    }
+  ],
+  "end": 32.06,
+  "fx": [
+    {
+      "file": "../../skills/score/assets/kit/whoosh-long_1.wav",
+      "t": 0.25,
+      "gain": 0.45
+    },
+    {
+      "file": "../../skills/score/assets/kit/hit_1.wav",
+      "t": 2.06,
+      "gain": 0.75
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-short_3.wav",
+      "t": 3.71,
+      "gain": 0.4
+    },
+    {
+      "file": "../../skills/score/assets/kit/hit_2.wav",
+      "t": 4.06,
+      "gain": 0.7
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-long_2.wav",
+      "t": 4.56,
+      "gain": 0.5
+    },
+    {
+      "file": "../../skills/score/assets/kit/hit_1.wav",
+      "t": 7.57,
+      "gain": 0.8
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_1.wav",
+      "t": 9.25,
+      "gain": 0.22
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-short_1.wav",
+      "t": 10.42,
+      "gain": 0.42
+    },
+    {
+      "file": "../../skills/score/assets/kit/click_1.wav",
+      "t": 10.921,
+      "gain": 0.55
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_1.wav",
+      "t": 11.597,
+      "gain": 0.32
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_2.wav",
+      "t": 11.697,
+      "gain": 0.32
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_3.wav",
+      "t": 11.809,
+      "gain": 0.32
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_2.wav",
+      "t": 11.85,
+      "gain": 0.22
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_4.wav",
+      "t": 11.909,
+      "gain": 0.32
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_5.wav",
+      "t": 11.992,
+      "gain": 0.32
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_6.wav",
+      "t": 12.107,
+      "gain": 0.32
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_1.wav",
+      "t": 12.217,
+      "gain": 0.32
+    },
+    {
+      "file": "../../skills/score/assets/kit/click_2.wav",
+      "t": 13.12,
+      "gain": 0.55
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-short_2.wav",
+      "t": 13.38,
+      "gain": 0.42
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_2.wav",
+      "t": 13.56,
+      "gain": 0.4
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_3.wav",
+      "t": 14.25,
+      "gain": 0.3
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_1.wav",
+      "t": 14.78,
+      "gain": 0.45
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-long_1.wav",
+      "t": 15.25,
+      "gain": 0.55
+    },
+    {
+      "file": "../../skills/score/assets/kit/hit_2.wav",
+      "t": 15.82,
+      "gain": 0.7
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_3.wav",
+      "t": 16.35,
+      "gain": 0.22
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_2.wav",
+      "t": 19.42,
+      "gain": 0.55
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-short_3.wav",
+      "t": 20.38,
+      "gain": 0.42
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_1.wav",
+      "t": 20.56,
+      "gain": 0.4
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_1.wav",
+      "t": 20.66,
+      "gain": 0.3
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_1.wav",
+      "t": 21.25,
+      "gain": 0.22
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_2.wav",
+      "t": 21.71,
+      "gain": 0.3
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_2.wav",
+      "t": 23.51,
+      "gain": 0.4
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-short_1.wav",
+      "t": 24.38,
+      "gain": 0.42
+    },
+    {
+      "file": "../../skills/score/assets/kit/hit_1.wav",
+      "t": 24.56,
+      "gain": 0.6
+    },
+    {
+      "file": "../../skills/score/assets/kit/click_3.wav",
+      "t": 24.723,
+      "gain": 0.55
+    },
+    {
+      "file": "../../skills/score/assets/kit/whoosh-short_2.wav",
+      "t": 27.38,
+      "gain": 0.42
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_1.wav",
+      "t": 27.56,
+      "gain": 0.45
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_2.wav",
+      "t": 28.05,
+      "gain": 0.22
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_1.wav",
+      "t": 32.06,
+      "gain": 0.6
+    },
+    {
+      "file": "../../skills/score/assets/kit/hit_2.wav",
+      "t": 32.06,
+      "gain": 0.95
+    }
+  ]
+}

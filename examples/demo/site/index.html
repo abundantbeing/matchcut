@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orbit · mission control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #02040b; --glass: rgba(12, 16, 36, .56); --line: rgba(150, 170, 255, .12); --line2: rgba(150, 170, 255, .22);
+    --ink: #eef1ff; --dim: #8b93bf; --faint: #545c86; --teal: #39e0c3; --cobalt: #5b6cff; --warm: #ffc27a;
+    --mono: 'JetBrains Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; overflow: hidden; color: var(--ink); font: 13px/1.45 Inter, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  body { background: radial-gradient(900px 700px at 50% 46%, #0d1a46 0%, rgba(13, 26, 70, 0) 62%), radial-gradient(700px 500px at 8% 100%, rgba(57, 224, 195, .10), transparent 70%), radial-gradient(800px 500px at 100% 0%, rgba(91, 108, 255, .14), transparent 70%), var(--bg); }
+  #sky { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+  .glass { position: fixed; background: var(--glass); border: 1px solid var(--line); border-radius: 14px; backdrop-filter: blur(16px) saturate(1.3); box-shadow: 0 24px 60px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .05); }
+  .mono { font-family: var(--mono); }
+  .lbl { font: 500 10px var(--mono); letter-spacing: .12em; color: var(--faint); text-transform: uppercase; }
+
+  header { left: 16px; right: 16px; top: 12px; height: 46px; display: flex; align-items: center; gap: 14px; padding: 0 8px 0 16px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15px; letter-spacing: .02em; }
+  .brand i { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--teal); position: relative; box-shadow: 0 0 14px rgba(57, 224, 195, .55); }
+  .brand i::after { content: ''; position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #fff; top: -4px; left: 4px; box-shadow: 0 0 8px var(--teal); }
+  .sep { width: 1px; height: 18px; background: var(--line2); }
+  .crumb { color: var(--dim); } .crumb b { color: var(--ink); font-weight: 500; }
+  .live { display: flex; align-items: center; gap: 7px; color: var(--teal); font: 500 10.5px var(--mono); letter-spacing: .12em; }
+  .live::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 10px var(--teal); animation: pulse 1.6s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .clock { margin-left: auto; font: 500 12px var(--mono); color: var(--dim); } .clock b { color: var(--ink); font-weight: 500; }
+  .chip { font: 500 11px var(--mono); color: var(--dim); border: 1px solid var(--line); border-radius: 8px; padding: 5px 9px; } .chip b { color: var(--ink); font-weight: 500; }
+  .search { display: flex; align-items: center; gap: 8px; width: 180px; height: 30px; border: 1px solid var(--line); border-radius: 9px; padding: 0 9px; color: var(--faint); background: rgba(255, 255, 255, .02); }
+  .search kbd { margin-left: auto; font: 500 10px var(--mono); color: var(--dim); border: 1px solid var(--line2); border-radius: 5px; padding: 1px 5px; }
+  .btn { font: 600 13px Inter, system-ui, sans-serif; color: #021510; background: linear-gradient(135deg, #7ff8de, #39e0c3 45%, #38b6ff); border: 0; border-radius: 9px; height: 32px; padding: 0 15px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .2), 0 6px 24px rgba(57, 224, 195, .35); transition: transform .2s, box-shadow .2s; }
+  .btn:hover { transform: translateY(-1px); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3), 0 10px 34px rgba(57, 224, 195, .6); }
+  .btn.ghost { background: transparent; color: var(--dim); border: 1px solid var(--line2); box-shadow: none; }
+  .btn svg { width: 14px; height: 14px; }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #8b9bff, #39e0c3); display: grid; place-items: center; font: 700 11px Inter; color: #04101a; }
+
+  #fleet { left: 16px; top: 70px; width: 288px; bottom: 16px; padding: 14px 10px 12px; display: flex; flex-direction: column; }
+  .ph { display: flex; align-items: center; gap: 8px; padding: 0 6px 10px; }
+  .ph h2 { margin: 0; font-size: 14px; font-weight: 600; }
+  .ph .n { font: 500 11px var(--mono); color: var(--dim); }
+  .tabs { margin-left: auto; display: flex; gap: 2px; } .tabs a { font-size: 11px; color: var(--dim); padding: 3px 8px; border-radius: 6px; } .tabs a.on { background: rgba(255, 255, 255, .07); color: var(--ink); }
+  #rows { display: flex; flex-direction: column; gap: 2px; }
+  .row { display: grid; grid-template-columns: 12px 1fr 74px; column-gap: 10px; align-items: center; padding: 8px 8px; border-radius: 10px; border: 1px solid transparent; cursor: pointer; transition: background .25s, border-color .25s; }
+  .row:hover, .row.hot { background: rgba(91, 108, 255, .11); border-color: rgba(91, 108, 255, .38); }
+  .row.on { background: rgba(57, 224, 195, .07); border-color: rgba(57, 224, 195, .28); }
+  .row .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--teal); box-shadow: 0 0 8px var(--teal); }
+  .row .dot.warn { background: var(--warm); box-shadow: 0 0 8px var(--warm); }
+  .row b { display: block; font-weight: 600; font-size: 13px; }
+  .row small { display: block; color: var(--dim); font: 500 10.5px var(--mono); margin-top: 1px; }
+  .row canvas { width: 74px; height: 26px; }
+  .row.new { animation: arrive 1.1s cubic-bezier(.2, .8, .2, 1) both; background: rgba(57, 224, 195, .13); border-color: rgba(57, 224, 195, .55); }
+  @keyframes arrive { from { transform: translateX(-30px); opacity: 0; } }
+  .health { margin-top: auto; padding: 12px 6px 0; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .health div b { display: block; font: 500 17px var(--mono); margin-top: 2px; }
+
+  #detail { right: 16px; top: 70px; width: 300px; bottom: 16px; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .dh { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: center; }
+  #dock { width: 92px; height: 134px; border-radius: 10px; background: linear-gradient(160deg, #0d1640, #070b22); border: 1.5px solid #2c4dff; box-shadow: 0 0 22px rgba(44, 77, 255, .35); display: grid; place-items: center; }
+  #dock svg { width: 66px; height: 66px; }
+  .dname { font-size: 21px; font-weight: 700; letter-spacing: -.01em; }
+  .dsub { color: var(--dim); font: 500 11px var(--mono); margin: 3px 0 9px; }
+  .status { display: inline-flex; align-items: center; gap: 6px; font: 600 10px var(--mono); letter-spacing: .12em; color: var(--teal); background: rgba(57, 224, 195, .1); border: 1px solid rgba(57, 224, 195, .3); border-radius: 999px; padding: 3px 9px; }
+  .status.go { color: #fff; background: rgba(91, 108, 255, .25); border-color: rgba(120, 140, 255, .6); }
+  .caphead { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
+  .caphead span:last-child { font: 500 10.5px var(--mono); color: var(--dim); }
+  #capbox { position: relative; height: 179px; border-radius: 10px; overflow: hidden; border: 1px solid var(--line2); cursor: zoom-in; background: #050812; transition: transform .3s, border-color .3s; }
+  #capbox:hover { transform: scale(1.015); border-color: rgba(57, 224, 195, .6); }
+  #cap { width: 100%; height: 100%; display: block; }
+  .corner { position: absolute; width: 12px; height: 12px; border: 1.5px solid rgba(255, 255, 255, .7); }
+  .corner.a { left: 8px; top: 8px; border-right: 0; border-bottom: 0; } .corner.b { right: 8px; top: 8px; border-left: 0; border-bottom: 0; }
+  .corner.c { left: 8px; bottom: 8px; border-right: 0; border-top: 0; } .corner.d { right: 8px; bottom: 8px; border-left: 0; border-top: 0; }
+  .coord { position: absolute; left: 26px; bottom: 8px; font: 500 10px var(--mono); color: rgba(255, 255, 255, .85); text-shadow: 0 1px 3px #000; }
+  .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .m { background: rgba(255, 255, 255, .025); border: 1px solid var(--line); border-radius: 10px; padding: 9px 11px; }
+  .m b { display: block; font: 500 18px var(--mono); margin: 3px 0 6px; font-variant-numeric: tabular-nums; } .m b small { font-size: 11px; color: var(--dim); margin-left: 3px; }
+  .bar { height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .07); overflow: hidden; } .bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--cobalt), var(--teal)); border-radius: 3px; }
+  .pass { margin-top: auto; display: flex; align-items: center; justify-content: space-between; padding: 11px 12px; border-radius: 10px; background: linear-gradient(90deg, rgba(91, 108, 255, .14), rgba(57, 224, 195, .06)); border: 1px solid var(--line2); }
+  .pass b { font: 500 17px var(--mono); }
+
+  #passes { left: 320px; right: 332px; bottom: 16px; height: 96px; padding: 10px 14px; }
+  #passes canvas { width: 100%; height: 100%; display: block; }
+
+  /* ascent telemetry: one glass card docked under the globe, never over its labels */
+  #tele { left: 428px; width: 412px; bottom: 132px; padding: 12px 16px 0; pointer-events: none; opacity: 0; transform: translateY(10px); }
+  #tele .th { display: flex; align-items: center; gap: 8px; font: 600 10px var(--mono); letter-spacing: .22em; color: var(--ink); }
+  #tele .th i { width: 6px; height: 6px; border-radius: 3px; background: var(--teal); box-shadow: 0 0 10px var(--teal); }
+  #tele .th span:last-child { margin-left: auto; color: var(--teal); }
+  #tele .tv { display: grid; grid-template-columns: 1.2fr 1.2fr .8fr; margin-top: 10px; }
+  #tele .tv div { padding: 0 12px; border-left: 1px solid var(--line); } #tele .tv div:first-child { padding-left: 0; border-left: 0; }
+  #tele .tv b { display: block; margin-top: 4px; font: 500 21px var(--mono); color: #fff; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+  #tele .tv b small { font-size: 11px; color: var(--dim); margin-left: 4px; }
+  #tele .tp { height: 2px; margin: 12px -16px 0; background: rgba(255, 255, 255, .06); border-radius: 0 0 14px 14px; overflow: hidden; }
+  #tele .tp i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cobalt), var(--teal)); box-shadow: 0 0 12px var(--teal); }
+
+  .scrim { position: fixed; inset: 0; background: rgba(2, 4, 12, .62); backdrop-filter: blur(5px); opacity: 0; pointer-events: none; }
+  .scrim.open { pointer-events: auto; }
+  #hero { position: fixed; left: 500px; top: 154px; width: 280px; height: 412px; border-radius: 18px; background: linear-gradient(165deg, #0e1745 0%, #081030 55%, #060a24 100%); border: 2px solid #2a4bff; box-shadow: 0 0 40px rgba(42, 75, 255, .45), 0 30px 80px rgba(0, 0, 0, .6); display: grid; place-items: center; transform-origin: 0 0; opacity: 0; pointer-events: none; }
+  #hero svg { width: 214px; height: 214px; overflow: visible; }
+  #hero .hl { position: absolute; left: 20px; top: 18px; } #hero .hr { position: absolute; right: 20px; top: 18px; color: var(--teal); }
+  #hero .hb { position: absolute; left: 20px; right: 20px; bottom: 18px; display: flex; justify-content: space-between; font: 500 11px var(--mono); color: var(--dim); }
+  #done { position: fixed; left: 590px; top: 590px; width: 100px; justify-content: center; opacity: 0; pointer-events: none; }
+
+  #sheet { left: 440px; top: 150px; width: 400px; padding: 22px; opacity: 0; pointer-events: none; transform: translateY(16px) scale(.97); transition: opacity .35s, transform .45s cubic-bezier(.2, .8, .2, 1); z-index: 5; }
+  #sheet.open { opacity: 1; pointer-events: auto; transform: none; }
+  #sheet h3 { margin: 0; font-size: 18px; } #sheet p { margin: 3px 0 16px; color: var(--dim); }
+  #sheet input { width: 100%; font: 500 15px Inter, system-ui; color: var(--ink); background: rgba(0, 0, 0, .25); border: 1px solid var(--line2); border-radius: 9px; padding: 11px 12px; margin: 6px 0 16px; outline: none; }
+  #sheet input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(57, 224, 195, .15); }
+  .opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 6px 0 16px; }
+  .opt { border: 1px solid var(--line2); border-radius: 10px; padding: 10px; } .opt b { display: block; font-size: 13px; } .opt small { color: var(--dim); font: 500 10.5px var(--mono); }
+  .opt.on { border-color: var(--teal); background: rgba(57, 224, 195, .08); box-shadow: inset 0 0 0 1px rgba(57, 224, 195, .3); }
+  .site { display: flex; justify-content: space-between; padding: 10px 12px; border-radius: 10px; background: rgba(255, 255, 255, .03); border: 1px solid var(--line); margin-bottom: 18px; font: 500 11.5px var(--mono); color: var(--dim); } .site b { color: var(--ink); font-weight: 500; }
+  .acts { display: flex; justify-content: flex-end; gap: 8px; }
+
+  #toast { left: 50%; top: 70px; transform: translate(-50%, -20px); padding: 10px 16px 10px 12px; display: flex; align-items: center; gap: 10px; opacity: 0; transition: opacity .5s, transform .6s cubic-bezier(.2, .8, .2, 1); border-color: rgba(57, 224, 195, .45); z-index: 6; }
+  #toast.show { opacity: 1; transform: translate(-50%, 0); }
+  #toast i { width: 22px; height: 22px; border-radius: 50%; background: rgba(57, 224, 195, .18); display: grid; place-items: center; color: var(--teal); font-style: normal; font-weight: 700; }
+  #toast span { color: var(--dim); font: 500 11px var(--mono); margin-left: 4px; }
+
+  #lb { position: fixed; left: 0; top: 0; width: 960px; height: 640px; border-radius: 14px; overflow: hidden; transform-origin: 0 0; opacity: 0; pointer-events: none; box-shadow: 0 40px 120px rgba(0, 0, 0, .7); border: 1px solid rgba(255, 255, 255, .15); z-index: 9; }
+  #lb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #lb::after { content: ''; position: absolute; inset: auto 0 0 0; height: 120px; background: linear-gradient(transparent, rgba(2, 4, 12, .75)); }
+  #lb .meta, #lb .corner, #lb .tag { z-index: 1; }
+  #lb .corner { width: 22px; height: 22px; border-width: 2px; } #lb .corner.a, #lb .corner.b { top: 18px; } #lb .corner.c, #lb .corner.d { bottom: 18px; } #lb .corner.a, #lb .corner.c { left: 18px; } #lb .corner.b, #lb .corner.d { right: 18px; }
+  #lb .meta { position: absolute; left: 50px; bottom: 22px; font: 500 12px var(--mono); color: #fff; letter-spacing: .08em; text-shadow: 0 1px 6px rgba(0, 0, 0, .8); }
+  #lb .meta b { color: var(--teal); font-weight: 600; }
+  #lb .tag { position: absolute; right: 50px; top: 22px; font: 600 11px var(--mono); letter-spacing: .14em; color: #021510; background: var(--teal); border-radius: 6px; padding: 5px 9px; }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<header class="glass">
+  <div class="brand"><i></i>Orbit</div>
+  <div class="sep"></div>
+  <div class="crumb">Fleet / <b>Live view</b></div>
+  <div class="live">LIVE</div>
+  <div class="clock">UTC <b id="clock">00:00:00</b></div>
+  <div class="chip"><b id="ntracked">0</b> tracked</div>
+  <div class="chip"><b id="nactive">0</b> active</div>
+  <div class="search"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="7" cy="7" r="5"/><path d="M11 11l3.5 3.5"/></svg>Search fleet<kbd>⌘K</kbd></div>
+  <button class="btn" id="launch"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1c2.6 1.6 4 4.4 4 7.6L13.5 11 11 12.5 10 11H6l-1 1.5L2.5 11 4 8.6C4 5.4 5.4 2.6 8 1zm0 4.2a1.3 1.3 0 100 2.6 1.3 1.3 0 000-2.6zM6.8 12.6h2.4L8 15.4z"/></svg>Launch</button>
+  <div class="avatar">KO</div>
+</header>
+
+<aside class="glass" id="fleet">
+  <div class="ph"><h2>Fleet</h2><span class="n" id="fleetn">9</span><div class="tabs"><a class="on">All</a><a>LEO</a><a>MEO</a></div></div>
+  <div id="rows"></div>
+  <div class="health">
+    <div><div class="lbl">Downlinked today</div><b id="gb">0 GB</b></div>
+    <div><div class="lbl">Links up</div><b id="links">0 / 5</b></div>
+  </div>
+</aside>
+
+<aside class="glass" id="detail">
+  <div class="dh">
+    <div id="dock"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="38" fill="none" stroke="#173a52" stroke-width="9"/><circle id="dockring" cx="50" cy="50" r="38" fill="none" stroke="#39e0c3" stroke-width="9" stroke-dasharray="0 999" transform="rotate(-90 50 50)" style="filter: drop-shadow(0 0 4px #39e0c3)"/></svg></div>
+    <div><div class="dname" id="dname">Orion</div><div class="dsub" id="dsub">LEO · 548 km · 97.6°</div><span class="status" id="dstat">NOMINAL</span></div>
+  </div>
+  <div>
+    <div class="caphead"><span class="lbl" id="caplbl">Latest capture</span><span id="captime">04:12 ago</span></div>
+    <div id="capbox"><canvas id="cap"></canvas><i class="corner a"></i><i class="corner b"></i><i class="corner c"></i><i class="corner d"></i><span class="coord" id="coord">61.08°N 146.92°W</span></div>
+  </div>
+  <div class="metrics">
+    <div class="m"><div class="lbl">Altitude</div><b id="malt">548<small>km</small></b><div class="bar"><i id="balt" style="width:62%"></i></div></div>
+    <div class="m"><div class="lbl">Velocity</div><b id="mvel">7.59<small>km/s</small></b><div class="bar"><i id="bvel" style="width:76%"></i></div></div>
+    <div class="m"><div class="lbl">Battery</div><b id="mbat">92<small>%</small></b><div class="bar"><i id="bbat" style="width:92%"></i></div></div>
+    <div class="m"><div class="lbl">Link</div><b id="mlink">-71<small>dBm</small></b><div class="bar"><i id="blink" style="width:70%"></i></div></div>
+  </div>
+  <div class="pass"><div><div class="lbl">Next pass · <span id="pstation">Svalbard</span></div><b id="pcount">04:12</b></div><svg width="44" height="22" viewBox="0 0 44 22"><path d="M2 20 Q22 -6 42 20" fill="none" stroke="#39e0c3" stroke-width="1.6" stroke-dasharray="3 3"/><circle cx="22" cy="7" r="3" fill="#fff"/></svg></div>
+</aside>
+
+<div class="glass" id="passes"><canvas id="tl"></canvas></div>
+
+<div class="glass" id="tele"><div class="th"><i></i><span id="tname">KESTREL</span><span>ASCENT</span></div>
+  <div class="tv"><div><span class="lbl">Altitude</span><b id="talt">0<small>km</small></b></div><div><span class="lbl">Velocity</span><b id="tvel">0.00<small>km/s</small></b></div><div><span class="lbl">Stage</span><b id="tstage">1</b></div></div>
+  <div class="tp"><i id="tprog"></i></div></div>
+
+<div class="scrim" id="scrim"></div>
+<div id="hero">
+  <span class="lbl hl" id="heroname">Orion</span><span class="lbl hr">Pass complete</span>
+  <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#173a52" stroke-width="8.5"/><circle id="heroring" cx="50" cy="50" r="40" fill="none" stroke="#3ff0cf" stroke-width="8.5" stroke-dasharray="0 999" transform="rotate(-90 50 50)" style="filter: drop-shadow(0 0 5px #39e0c3) drop-shadow(0 0 12px rgba(57,224,195,.6))"/></svg>
+  <div class="hb"><span>ORBIT <b style="color:#fff" id="heropct">0%</b></span><span>548 KM</span></div>
+</div>
+<button class="btn" id="done">Done</button>
+
+<div class="glass" id="sheet">
+  <h3>New launch</h3><p>Name it, pick an orbit, send it up.</p>
+  <div class="lbl">Satellite name</div>
+  <input id="name" placeholder="e.g. Kestrel" autocomplete="off" spellcheck="false">
+  <div class="lbl">Orbit</div>
+  <div class="opts"><div class="opt on"><b>LEO</b><small>550 km</small></div><div class="opt"><b>SSO</b><small>720 km</small></div><div class="opt"><b>MEO</b><small>8,000 km</small></div></div>
+  <div class="site"><span>SITE <b>Cape Canaveral · LC-39A</b></span><span>WINDOW <b>OPEN</b></span></div>
+  <div class="acts"><button class="btn ghost" id="cancel">Cancel</button><button class="btn" id="go">Launch</button></div>
+</div>
+
+<div class="glass" id="toast"><i>✓</i><b id="toastname">Kestrel</b> reached orbit<span>550 KM · 51.6°</span></div>
+
+<div id="lb"><img id="lbimg" alt=""><i class="corner a"></i><i class="corner b"></i><i class="corner c"></i><i class="corner d"></i><div class="tag">FIRST LIGHT</div><div class="meta"><b id="lbname">KESTREL</b> · 64.02°N 18.31°W · 0.5 M/PX · DOWNLINK 412 MB/S</div></div>
+
+<script src="land.js"></script>
+<script>
+// ---------- helpers ----------
+const $ = id => document.getElementById(id);
+const now = () => performance.now();
+const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+const eo = k => 1 - Math.pow(1 - k, 3), eio = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const tween = (ms, fn, ease = eo) => new Promise(res => { const t0 = now(); const f = () => { const k = clamp((now() - t0) / ms); fn(ease(k), k); k < 1 ? requestAnimationFrame(f) : res(); }; requestAnimationFrame(f); });
+const wait = ms => new Promise(r => setTimeout(r, ms));
+let seed = 7; const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+const norm = v => { const l = Math.hypot(...v); return v.map(x => x / l); };
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const sph = (lat, lon) => { const a = lat * Math.PI / 180, o = lon * Math.PI / 180; return [Math.cos(a) * Math.sin(o), Math.sin(a), Math.cos(a) * Math.cos(o)]; };
+
+// ---------- the Earth ----------
+const bits = Uint8Array.from(atob(window.LAND), c => c.charCodeAt(0));
+const land = (lat, lon) => { const y = clamp(Math.floor(90 - lat), 0, 179), x = clamp(Math.floor(lon + 180), 0, 359); return (bits[y * 45 + (x >> 3)] >> (x & 7)) & 1; };
+const dots = [];
+{ const N = 22000, g = Math.PI * (3 - Math.sqrt(5));
+  for (let i = 0; i < N; i++) { const y = 1 - (i / (N - 1)) * 2, r = Math.sqrt(1 - y * y), th = g * i; const p = [Math.cos(th) * r, y, Math.sin(th) * r];
+    const lat = Math.asin(p[1]) * 180 / Math.PI, lon = Math.atan2(p[0], p[2]) * 180 / Math.PI;
+    if (land(lat, lon)) dots.push({ p, city: rnd() < .16, f: rnd() * 6.28, dl: .05 + .85 * rnd() * rnd() + .25 * (1 - p[1]) / 2, sp: 1.2 + 2.6 * rnd(), tw: (rnd() - .5) * 2.4 }); } }
+
+const stations = [['SVALBARD', 78.2, 15.4], ['FAIRBANKS', 64.8, -147.7], ['CANBERRA', -35.3, 149.0], ['HARTRAO', -25.9, 27.7], ['PUNTA ARENAS', -53.0, -70.9]].map(([n, la, lo]) => ({ n, p: sph(la, lo) }));
+const SITE = sph(28.6, -80.6);
+
+// ---------- satellites ----------
+const orbitBasis = (inc, raan) => { const i = inc * Math.PI / 180, o = raan * Math.PI / 180;
+  const e1 = [Math.sin(o), 0, Math.cos(o)], x = cross(e1, [0, 1, 0]);
+  const n = [x[0] * Math.sin(i), Math.cos(i), x[2] * Math.sin(i)];
+  return [e1, norm(cross(n, e1))]; };
+const FLEET = [
+  ['Orion', 'LEO', 548, 97.6, 'glacier', 78, 92, -71, 'Svalbard', '61.08°N 146.92°W'],
+  ['Vega', 'LEO', 612, 53.0, 'atoll', 64, 88, -68, 'Canberra', '9.42°S 46.20°E'],
+  ['Lyra', 'SSO', 705, 98.2, 'dunes', 41, 97, -74, 'Hartrao', '24.71°N 9.83°E'],
+  ['Atlas', 'LEO', 530, 51.6, 'storm', 90, 81, -69, 'Fairbanks', '18.30°N 61.05°W'],
+  ['Nova', 'MEO', 8050, 56.0, 'city', 22, 76, -83, 'Punta Arenas', '34.66°N 135.20°E'],
+  ['Pike', 'LEO', 575, 70.0, 'atoll', 57, 64, -77, 'Svalbard', '16.81°S 150.11°W'],
+  ['Rhea', 'SSO', 720, 98.0, 'glacier', 33, 95, -72, 'Fairbanks', '68.12°N 31.45°W'],
+  ['Tess', 'LEO', 590, 45.0, 'dunes', 70, 58, -80, 'Canberra', '22.95°N 13.38°E'],
+  ['Juno', 'MEO', 7900, 63.4, 'storm', 15, 90, -79, 'Hartrao', '25.10°N 72.40°W']
+];
+const sats = FLEET.map(([name, type, alt, inc, img, pct, bat, link, st, coord], i) => {
+  const r = type === 'MEO' ? 1.62 + i * .015 : 1.13 + (alt - 500) / 1600 + i * .012;
+  const [e1, e2] = orbitBasis(inc, i * 41 + 15);
+  return { name, type, alt, inc, img, pct, bat, link, st, coord, r, e1, e2, u: i * 1.37, w: (type === 'MEO' ? .07 : .2) * (1 + (i % 3) * .08), fleet: true };
+});
+const junk = [];
+for (let i = 0; i < 231; i++) { const meo = rnd() < .14; const [e1, e2] = orbitBasis(rnd() * 100, rnd() * 360);
+  junk.push({ e1, e2, r: meo ? 1.55 + rnd() * .25 : 1.05 + rnd() * .3, u: rnd() * 6.28, w: (meo ? .05 : .14 + rnd() * .12) * (rnd() < .5 ? 1 : -1), b: .35 + rnd() * .5 }); }
+const satPos = (s, u) => { const c = Math.cos(u), si = Math.sin(u); return [(s.e1[0] * c + s.e2[0] * si) * s.r, (s.e1[1] * c + s.e2[1] * si) * s.r, (s.e1[2] * c + s.e2[2] * si) * s.r]; };
+
+// ---------- view ----------
+const cv = $('sky'), g = cv.getContext('2d');
+let W = 0, H = 0, DPR = 1;
+const view = { cx: 634, cy: 326, R: 204, tilt: .38, rot: 1.9, spin: .06, zoom: 1 };
+const stars = Array.from({ length: 420 }, () => ({ x: rnd(), y: rnd(), s: rnd() < .08 ? 1.6 : .9, a: .2 + rnd() * .6, f: rnd() * 6.28 }));
+let hover = null, selected = 'Orion', launch = null, kestrel = null;
+const toView = (p, earth) => { let [x, y, z] = p;
+  if (earth) { const c = Math.cos(view.rot), s = Math.sin(view.rot); [x, z] = [x * c + z * s, -x * s + z * c]; }
+  const ct = Math.cos(view.tilt), st = Math.sin(view.tilt); return [x, y * ct - z * st, y * st + z * ct]; };
+const scr = v => [view.cx + v[0] * view.R * view.zoom, view.cy - v[1] * view.R * view.zoom];
+const hidden = v => v[2] < 0 && v[0] * v[0] + v[1] * v[1] < 1;
+const SUN = norm([-.62, .38, .68]);
+
+function drawRing(s, alpha, color, from = 0, span = Math.PI * 2, width = 1, front = null) {
+  const n = Math.max(8, Math.round(160 * span / 6.283)); let prev = null;
+  for (let i = 0; i <= n; i++) { const u = from + span * i / n, v = toView(satPos(s, u)), p = scr(v);
+    if (prev && !hidden(v) && !prev.h && (front === null || (v[2] >= 0) === front)) { g.strokeStyle = color; g.globalAlpha = alpha * (v[2] < 0 ? .45 : 1); g.lineWidth = width; g.beginPath(); g.moveTo(prev.p[0], prev.p[1]); g.lineTo(p[0], p[1]); g.stroke(); }
+    prev = { p, h: hidden(v) }; }
+  g.globalAlpha = 1; }
+
+// ---------- boot: the dots fly in and lock into the globe, orbits draw on, the panels glide in ----------
+const HOLD = location.search.includes('hold');
+let bootT = HOLD ? Infinity : now();
+if (HOLD) view.rot = 1.38; // ?hold: the Americas face the camera, as in the film's last still
+const bk = (a, d) => { const bt = (now() - bootT) / 1000; return eo(clamp((bt - a) / d)); };
+function bootPanels() {
+  [['header', 1.9, 0, -14], ['#fleet', 2.05, -26, 0], ['#detail', 2.2, 26, 0], ['#passes', 2.35, 0, 18]].forEach(([sel, at, x, y]) => {
+    const el = document.querySelector(sel);
+    setTimeout(() => tween(800, k => { el.style.opacity = k; el.style.transform = `translate(${x * (1 - k)}px, ${y * (1 - k)}px)`; el.style.filter = k < 1 ? `blur(${(1 - k) * 8}px)` : ''; }), at * 1000);
+  });
+  setTimeout(() => { count($('ntracked'), 0, 240, 1400); count($('nactive'), 0, 9, 1400); count($('gb'), 0, 412.6, 1600, v => v.toFixed(1) + ' GB'); }, 2200);
+}
+for (const sel of ['header', '#fleet', '#detail', '#passes']) document.querySelector(sel).style.opacity = 0;
+window.boot = () => { bootT = now(); bootPanels(); };
+
+function frame() {
+  const t = now() / 1000, bt = (now() - bootT) / 1000;
+  const w = innerWidth, h = innerHeight, d = devicePixelRatio || 1;
+  if (w !== W || h !== H || d !== DPR) { W = w; H = h; DPR = d; cv.width = w * d; cv.height = h * d; }
+  g.setTransform(DPR, 0, 0, DPR, 0, 0); g.clearRect(0, 0, W, H);
+  const dt = frame.last ? Math.min(.05, t - frame.last) : 0; frame.last = t;
+  view.rot += view.spin * dt;
+  for (const s of sats) s.u += s.w * dt; for (const j of junk) j.u += j.w * dt; if (kestrel) kestrel.u += kestrel.w * dt;
+
+  // stars
+  for (const s of stars) { g.globalAlpha = s.a * (.65 + .35 * Math.sin(t * 1.4 + s.f)); g.fillStyle = '#cfd8ff'; g.fillRect(s.x * W, s.y * H, s.s, s.s); }
+  g.globalAlpha = 1;
+  const R = view.R * view.zoom, cx = view.cx, cy = view.cy;
+
+  // rings and objects behind the globe first
+  const all = kestrel ? [...sats, kestrel] : sats;
+  const rings = front => { for (const s of all) { const hot = hover === s.name || selected === s.name || s === kestrel;
+    const on = bk(1.5 + sats.indexOf(s) * .07, 1.1); if (on <= 0) continue; drawRing(s, hot ? .9 : .2, hot ? '#39e0c3' : '#7d8cff', s.u - Math.PI * 2 * on, Math.PI * 2 * on, hot ? 1.6 : 1, front); } };
+  rings(false);
+  const ja = bk(1.8, .9); const drawJunk = front => { if (ja <= 0) return; for (const j of junk) { const v = toView(satPos(j, j.u)); if ((v[2] >= 0) !== front || hidden(v)) continue; const p = scr(v); g.globalAlpha = ja * j.b * (v[2] < 0 ? .5 : 1); g.fillStyle = '#b9c3ff'; g.fillRect(p[0] - .7, p[1] - .7, 1.4, 1.4); } g.globalAlpha = 1; };
+  drawJunk(false);
+
+  // the globe body
+  const body = g.createRadialGradient(cx + SUN[0] * R * .45, cy - SUN[1] * R * .45, R * .1, cx, cy, R);
+  body.addColorStop(0, '#13265a'); body.addColorStop(.5, '#08122f'); body.addColorStop(1, '#030612');
+  const ba = bk(.5, 1.1); g.globalAlpha = ba; g.fillStyle = body; g.beginPath(); g.arc(cx, cy, R, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+  // graticule
+  g.strokeStyle = `rgba(120,150,255,${.07 * bk(1.2, .8)})`; g.lineWidth = 1;
+  for (let lat = -60; lat <= 60; lat += 30) { g.beginPath(); let on = false; for (let lo = -180; lo <= 180; lo += 4) { const v = toView(sph(lat, lo), true); const p = scr(v); if (v[2] > 0) { on ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); on = true; } else on = false; } g.stroke(); }
+  for (let lo = -180; lo < 180; lo += 30) { g.beginPath(); let on = false; for (let lat = -90; lat <= 90; lat += 4) { const v = toView(sph(lat, lo), true); const p = scr(v); if (v[2] > 0) { on ? g.lineTo(p[0], p[1]) : g.moveTo(p[0], p[1]); on = true; } else on = false; } g.stroke(); }
+  // land
+  const ds = Math.max(1.1, R / 150);
+  const flying = [];
+  for (const dt0 of dots) { const v = toView(dt0.p, true); if (v[2] <= 0.02) continue; let p = scr(v); const l = v[0] * SUN[0] + v[1] * SUN[1] + v[2] * SUN[2];
+    const kk = eo(clamp((bt - dt0.dl) / 1.15)); if (kk <= 0) continue;
+    if (kk < 1) { const f = 1 + (1 - kk) * dt0.sp, a = (1 - kk) * dt0.tw, dx = (p[0] - cx) * f, dy = (p[1] - cy) * f; p = [cx + dx * Math.cos(a) - dy * Math.sin(a), cy + dx * Math.sin(a) + dy * Math.cos(a)]; flying.push([p, kk]); g.globalAlpha = kk; }
+    const sz = ds * (.55 + .45 * v[2]);
+    if (l > -.08) { const a = clamp(.25 + .75 * (l + .08)); g.fillStyle = `rgba(${Math.round(110 + 80 * a)},${Math.round(200 + 40 * a)},${Math.round(225)},${(.35 + .6 * a) * (.4 + .6 * v[2])})`; g.fillRect(p[0] - sz / 2, p[1] - sz / 2, sz, sz); }
+    else { g.fillStyle = `rgba(70,90,180,${.28 * v[2]})`; g.fillRect(p[0] - sz / 2, p[1] - sz / 2, sz, sz);
+      if (dt0.city) { g.fillStyle = `rgba(255,205,130,${(.55 + .35 * Math.sin(t * 3 + dt0.f)) * clamp(-l * 3) * v[2]})`; g.fillRect(p[0] - sz * .6, p[1] - sz * .6, sz * 1.2, sz * 1.2); } }
+    g.globalAlpha = 1; }
+  if (flying.length) { g.globalCompositeOperation = 'lighter'; for (const [p, kk] of flying) { g.fillStyle = `rgba(170,255,235,${.9 * Math.sin(kk * Math.PI)})`; g.fillRect(p[0] - 1.2, p[1] - 1.2, 2.4, 2.4); } g.globalCompositeOperation = 'source-over'; }
+  // the lock-in: a shockwave of light leaves the rim as the last dots land
+  const lk = clamp((bt - 1.45) / 1.1); if (lk > 0 && lk < 1) { g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(150,235,255,${.8 * (1 - lk)})`; g.lineWidth = 2 + 10 * (1 - lk); g.beginPath(); g.arc(cx, cy, R * (1 + eo(lk) * .9), 0, Math.PI * 2); g.stroke();
+    const fl = g.createRadialGradient(cx, cy, R * .6, cx, cy, R * 1.3); fl.addColorStop(0, 'rgba(90,200,255,0)'); fl.addColorStop(.6, `rgba(120,220,255,${.35 * Math.sin(lk * Math.PI)})`); fl.addColorStop(1, 'rgba(90,200,255,0)'); g.fillStyle = fl; g.beginPath(); g.arc(cx, cy, R * 1.3, 0, Math.PI * 2); g.fill(); g.globalCompositeOperation = 'source-over'; }
+  // atmosphere
+  g.globalCompositeOperation = 'lighter';
+  const at = g.createRadialGradient(cx, cy, R * .8, cx, cy, R * 1.25); at.addColorStop(0, 'rgba(70,150,255,0)'); at.addColorStop(.42, 'rgba(70,160,255,.30)'); at.addColorStop(.5, 'rgba(90,180,255,.22)'); at.addColorStop(.62, 'rgba(57,150,255,.08)'); at.addColorStop(1, 'rgba(57,120,255,0)');
+  g.globalAlpha = ba; g.fillStyle = at; g.beginPath(); g.arc(cx, cy, R * 1.25, 0, Math.PI * 2); g.fill();
+  const rim = g.createRadialGradient(cx + SUN[0] * R * .3, cy - SUN[1] * R * .3, R * .7, cx, cy, R * 1.02); rim.addColorStop(0, 'rgba(0,0,0,0)'); rim.addColorStop(.85, 'rgba(0,0,0,0)'); rim.addColorStop(1, 'rgba(140,220,255,.35)');
+  g.fillStyle = rim; g.beginPath(); g.arc(cx, cy, R * 1.02, 0, Math.PI * 2); g.fill(); g.globalAlpha = 1;
+  g.globalCompositeOperation = 'source-over';
+
+  // ground stations and beams
+  const links = []; const sa = bk(2.0, .7); g.globalAlpha = sa;
+  for (const st of stations) { if (sa <= 0) break; const v = toView(st.p, true); if (v[2] < .05) continue; const p = scr(v);
+    const k = ((t * .45 + st.p[0] * 3) % 1 + 1) % 1; g.strokeStyle = `rgba(57,224,195,${.6 * (1 - k)})`; g.lineWidth = 1; g.beginPath(); g.arc(p[0], p[1], 3 + k * 16, 0, Math.PI * 2); g.stroke();
+    g.fillStyle = '#39e0c3'; g.save(); g.translate(p[0], p[1]); g.rotate(Math.PI / 4); g.fillRect(-2.5, -2.5, 5, 5); g.restore();
+    g.fillStyle = 'rgba(200,230,255,.75)'; g.font = '500 8.5px "JetBrains Mono", monospace'; g.fillText(st.n, p[0] + 8, p[1] + 3);
+    for (const s of all) { const sv = toView(satPos(s, s.u)); if (hidden(sv)) continue; const sw = [sv[0] / s.r, sv[1] / s.r, sv[2] / s.r];
+      if (sw[0] * v[0] + sw[1] * v[1] + sw[2] * v[2] > (s.r > 1.5 ? .7 : .86)) links.push([p, scr(sv), s]); } }
+  g.setLineDash([4, 5]); g.lineDashOffset = -t * 30;
+  for (const [a, b, s] of links) { g.strokeStyle = s === kestrel ? 'rgba(255,255,255,.9)' : 'rgba(57,224,195,.55)'; g.lineWidth = s === kestrel ? 1.6 : 1; g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); }
+  g.setLineDash([]); g.globalAlpha = 1;
+  $('links').textContent = Math.min(5, new Set(links.map(l => l[0][0])).size) + ' / 5';
+
+  rings(true);
+  drawJunk(true);
+  // fleet satellites with trails and labels
+  const fa = bk(1.7, .8);
+  for (const s of all) { if (fa <= 0) break;
+    const hot = hover === s.name || selected === s.name || s === kestrel;
+    for (let i = 14; i >= 1; i--) { const v = toView(satPos(s, s.u - i * .022 * Math.sign(s.w))); if (hidden(v)) continue; const p = scr(v); g.globalAlpha = fa * (1 - i / 15) * .6; g.fillStyle = hot ? '#39e0c3' : '#8f9cff'; g.fillRect(p[0] - 1, p[1] - 1, 2, 2); }
+    g.globalAlpha = fa;
+    const v = toView(satPos(s, s.u)); if (hidden(v)) continue; const p = scr(v);
+    g.shadowColor = hot ? '#39e0c3' : '#8f9cff'; g.shadowBlur = hot ? 16 : 8; g.fillStyle = '#fff'; g.beginPath(); g.arc(p[0], p[1], hot ? 3.4 : 2.4, 0, Math.PI * 2); g.fill(); g.shadowBlur = 0;
+    g.globalAlpha = fa * (hot ? 1 : .55); g.fillStyle = hot ? '#fff' : '#aab4ff'; g.font = `${hot ? 600 : 500} ${hot ? 10.5 : 9}px "JetBrains Mono", monospace`; g.fillText(s.name.toUpperCase(), p[0] + 8, p[1] - 6); g.globalAlpha = 1;
+  }
+  if (launch) drawLaunch(t);
+  requestAnimationFrame(frame);
+}
+
+// ---------- the launch ----------
+// before liftoff: brackets close on the pad, then the ignition ring fills, tick by tick, beside a leader label
+function drawIgnition(p, k, name) {
+  const [x, y] = p, lock = eo(clamp(k / .35)), r = 48 - 28 * lock, R = 30, fill = clamp((k - .3) / .7);
+  g.save(); g.lineCap = 'square';
+  g.strokeStyle = `rgba(57,224,195,${.35 + .65 * lock})`; g.lineWidth = 1.5;
+  for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) { g.beginPath(); g.moveTo(x + sx * r, y + sy * (r - 8)); g.lineTo(x + sx * r, y + sy * r); g.lineTo(x + sx * (r - 8), y + sy * r); g.stroke(); }
+  g.globalAlpha = clamp((k - .2) / .2);
+  g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 1; g.beginPath(); g.arc(x, y, R, 0, Math.PI * 2); g.stroke();
+  g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.arc(x, y, R, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fill); g.stroke();
+  for (let i = 0; i < 12; i++) { const a = -Math.PI / 2 + i * Math.PI / 6, on = fill * 12 > i + .5;
+    g.strokeStyle = on ? 'rgba(57,224,195,1)' : 'rgba(255,255,255,.2)'; g.lineWidth = on ? 1.8 : 1;
+    g.beginPath(); g.moveTo(x + Math.cos(a) * (R + 5), y + Math.sin(a) * (R + 5)); g.lineTo(x + Math.cos(a) * (R + 10), y + Math.sin(a) * (R + 10)); g.stroke(); }
+  g.globalAlpha = 1; g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, 2.6 + .9 * Math.sin(k * 24), 0, Math.PI * 2); g.fill();
+  const la = clamp((k - .12) / .25), lx = x + 64, ly = y - 52;
+  g.globalAlpha = la; g.strokeStyle = 'rgba(255,255,255,.4)'; g.lineWidth = 1;
+  g.beginPath(); g.moveTo(x + 24, y - 24); g.lineTo(lx, ly); g.lineTo(lx + 132 * la, ly); g.stroke();
+  g.font = "600 11px 'JetBrains Mono', monospace"; g.letterSpacing = '2.5px';
+  g.fillStyle = '#fff'; g.fillText(name.toUpperCase() + ' · LC-39A', lx, ly - 9);
+  g.fillStyle = '#39e0c3'; g.fillText('IGNITION', lx, ly + 18);
+  g.fillStyle = 'rgba(238,241,255,.85)'; g.textAlign = 'right'; g.fillText(String(Math.round(fill * 100)).padStart(3, ' ') + '%', lx + 132, ly + 18);
+  g.restore();
+}
+function drawLaunch(t) {
+  const L = launch, el = (now() - L.t0) / 1000;
+  const v0 = toView(L.p0); const p0 = scr(v0);
+  if (el < L.lift) { drawIgnition(p0, el / L.lift, L.name); return; }
+  const go = (el - L.lift) / .7; if (go < 1) { // liftoff: the ring bursts outward
+    g.globalCompositeOperation = 'lighter'; g.strokeStyle = `rgba(160,245,230,${.9 * (1 - go)})`; g.lineWidth = 1 + 3 * (1 - go);
+    g.beginPath(); g.arc(p0[0], p0[1], 30 + 70 * eo(go), 0, Math.PI * 2); g.stroke(); g.globalCompositeOperation = 'source-over'; }
+  const k = clamp((el - L.lift) / L.burn), path = kk => { const th = Math.pow(kk, 1.35) * L.th, h = .3 * (1 - Math.pow(1 - kk, 2.2)) + .0; const c = Math.cos(th), s = Math.sin(th); return [(L.p0[0] * c + L.d[0] * s) * (1 + h), (L.p0[1] * c + L.d[1] * s) * (1 + h), (L.p0[2] * c + L.d[2] * s) * (1 + h)]; };
+  // trail
+  g.lineCap = 'round';
+  const N = 70; let prev = null;
+  for (let i = 0; i <= N; i++) { const kk = k * i / N, v = toView(path(kk)), p = scr(v);
+    if (prev && !hidden(v)) { const a = i / N; g.strokeStyle = `rgba(${Math.round(255 - 140 * (1 - a))},${Math.round(220 + 20 * a)},${Math.round(200 + 55 * a)},${.15 + .85 * a})`; g.lineWidth = 1 + 3.5 * a; g.beginPath(); g.moveTo(prev[0], prev[1]); g.lineTo(p[0], p[1]); g.stroke(); }
+    prev = p; }
+  if (k < 1) { const v = toView(path(k)), p = scr(v);
+    g.globalCompositeOperation = 'lighter';
+    const fl = g.createRadialGradient(p[0], p[1], 0, p[0], p[1], 26); fl.addColorStop(0, 'rgba(255,255,255,1)'); fl.addColorStop(.25, 'rgba(255,214,150,.75)'); fl.addColorStop(1, 'rgba(255,140,80,0)');
+    g.fillStyle = fl; g.beginPath(); g.arc(p[0], p[1], 26, 0, Math.PI * 2); g.fill();
+    if (Math.abs(k - .45) < .04) { const f = 1 - Math.abs(k - .45) / .04; g.fillStyle = `rgba(255,255,255,${f * .7})`; g.beginPath(); g.arc(p[0], p[1], 40 * f, 0, Math.PI * 2); g.fill(); }
+    g.globalCompositeOperation = 'source-over'; }
+  else if (kestrel) { const since = el - L.lift - L.burn; if (since < 1.2) { const v = toView(satPos(kestrel, L.u0)), p = scr(v), f = since / 1.2;
+      g.strokeStyle = `rgba(255,255,255,${1 - f})`; g.lineWidth = 2; g.beginPath(); g.arc(p[0], p[1], 6 + f * 60, 0, Math.PI * 2); g.stroke(); }
+    const sweep = clamp(since / 1.4); if (sweep < 1) { drawRing(kestrel, 1, '#ffffff', L.u0, Math.PI * 2 * eo(sweep), 2.2); } }
+  g.lineCap = 'butt';
+}
+
+// ---------- fleet list ----------
+const rowsEl = $('rows'), sparks = [];
+function addRow(s, fresh) {
+  const d = document.createElement('div'); d.className = 'row' + (fresh ? ' new' : '') + (s.name === selected ? ' on' : ''); d.dataset.name = s.name;
+  d.innerHTML = `<i class="dot${s.bat < 70 ? ' warn' : ''}"></i><div><b>${s.name}</b><small>${s.type} · ${s.alt.toLocaleString()} km · ${s.inc}°</small></div><canvas width="148" height="52"></canvas>`;
+  fresh ? rowsEl.prepend(d) : rowsEl.append(d);
+  sparks.push({ c: d.querySelector('canvas'), ph: sparks.length * 1.7, s });
+  d.onmouseenter = () => { hover = s.name; }; d.onmouseleave = () => { if (hover === s.name) hover = null; };
+  d.onclick = () => select(s.name);
+}
+sats.forEach(s => addRow(s));
+function drawSparks() { const t = now() / 1000;
+  for (const sp of sparks) { const c = sp.c.getContext('2d'); c.clearRect(0, 0, 148, 52); const hot = hover === sp.s.name || selected === sp.s.name;
+    const grad = c.createLinearGradient(0, 0, 148, 0); grad.addColorStop(0, 'rgba(91,108,255,0)'); grad.addColorStop(1, hot ? '#39e0c3' : '#7d8cff');
+    c.strokeStyle = grad; c.lineWidth = 2.4; c.beginPath();
+    for (let x = 0; x <= 148; x += 4) { const u = t * 1.6 + x / 18 + sp.ph; const y = 26 + Math.sin(u) * 9 + Math.sin(u * 2.7 + sp.ph) * 5 + Math.sin(u * 6.1) * 2; x ? c.lineTo(x, y) : c.moveTo(x, y); }
+    c.stroke(); }
+  requestAnimationFrame(drawSparks); }
+
+// ---------- pass timeline ----------
+const tl = $('tl'), tg = tl.getContext('2d');
+const passes = []; for (let r = 0; r < 4; r++) for (let i = 0; i < 9; i++) passes.push({ r, x: i * 150 + rnd() * 80 + r * 37, w: 40 + rnd() * 50, n: FLEET[(i + r * 2) % 9][0] });
+function drawTimeline() { const t = now() / 1000, w = tl.clientWidth, h = tl.clientHeight, d = devicePixelRatio || 1;
+  if (tl.width !== w * d) { tl.width = w * d; tl.height = h * d; }
+  tg.setTransform(d, 0, 0, d, 0, 0); tg.clearRect(0, 0, w, h);
+  const names = ['SVALBARD', 'FAIRBANKS', 'CANBERRA', 'HARTRAO'], left = 84, rh = 18, top = 6, play = left + (w - left) * .32, off = (t * 14) % 1350;
+  tg.font = '500 9px "JetBrains Mono", monospace';
+  names.forEach((n, i) => { tg.fillStyle = '#545c86'; tg.fillText(n, 0, top + i * rh + 12); tg.fillStyle = 'rgba(255,255,255,.035)'; tg.fillRect(left, top + i * rh + 3, w - left, rh - 6); });
+  for (const p of passes) for (const k of [0, 1350]) { const x = left + p.x + k - off; if (x > w || x + p.w < left) continue; const on = x < play && x + p.w > play;
+    const y = top + p.r * rh + 3; const gr = tg.createLinearGradient(x, 0, x + p.w, 0); gr.addColorStop(0, on ? 'rgba(57,224,195,.8)' : 'rgba(91,108,255,.45)'); gr.addColorStop(1, on ? 'rgba(57,224,195,.35)' : 'rgba(91,108,255,.18)');
+    tg.fillStyle = gr; tg.fillRect(Math.max(left, x), y, Math.min(p.w, x + p.w - left), rh - 6); if (x > left + 2) { tg.fillStyle = on ? '#021510' : '#c6ccff'; tg.fillText(p.n.toUpperCase(), x + 5, y + 9.5); } }
+  tg.strokeStyle = '#39e0c3'; tg.lineWidth = 1.2; tg.beginPath(); tg.moveTo(play, 0); tg.lineTo(play, h - 12); tg.stroke();
+  tg.fillStyle = '#39e0c3'; tg.fillText('NOW', play - 10, h - 1);
+  requestAnimationFrame(drawTimeline); }
+
+// ---------- detail panel ----------
+const imgs = {}; for (const n of ['glacier', 'atoll', 'dunes', 'storm', 'city', 'delta']) { imgs[n] = new Image(); imgs[n].src = `img/${n}.jpg`; }
+const cap = $('cap'), cg = cap.getContext('2d');
+let capState = { img: 'glacier', reveal: 1 };
+function drawCap() { const w = cap.clientWidth, h = cap.clientHeight, d = devicePixelRatio || 1; if (cap.width !== w * d) { cap.width = w * d; cap.height = h * d; }
+  cg.setTransform(d, 0, 0, d, 0, 0); cg.fillStyle = '#050812'; cg.fillRect(0, 0, w, h);
+  const im = imgs[capState.img]; if (!im.complete || !im.naturalWidth) return;
+  const r = capState.reveal;
+  if (r >= 1) { cg.drawImage(im, 0, 0, w, h); return; }
+  // pass 1: coarse blocks top-down, pass 2: full detail top-down
+  const coarse = clamp(r / .4), fine = clamp((r - .4) / .6);
+  if (!drawCap.small) { drawCap.small = document.createElement('canvas'); drawCap.small.width = 24; drawCap.small.height = 16; }
+  const sm = drawCap.small.getContext('2d'); sm.drawImage(im, 0, 0, 24, 16);
+  cg.imageSmoothingEnabled = false; cg.save(); cg.beginPath(); cg.rect(0, 0, w, h * coarse); cg.clip(); cg.drawImage(drawCap.small, 0, 0, w, h); cg.restore(); cg.imageSmoothingEnabled = true;
+  if (fine > 0) { cg.save(); cg.beginPath(); cg.rect(0, 0, w, h * fine); cg.clip(); cg.drawImage(im, 0, 0, w, h); cg.restore(); }
+  const y = h * (fine > 0 ? fine : coarse); cg.fillStyle = 'rgba(57,224,195,.9)'; cg.shadowColor = '#39e0c3'; cg.shadowBlur = 12; cg.fillRect(0, y - 1, w, 2); cg.shadowBlur = 0;
+  for (let i = 0; i < 160; i++) { cg.fillStyle = `rgba(160,200,255,${Math.random() * .12})`; cg.fillRect(Math.random() * w, y + Math.random() * (h - y), 2, 1); }
+  cg.fillStyle = 'rgba(2,4,12,.7)'; cg.fillRect(w - 118, 8, 110, 20); cg.fillStyle = '#39e0c3'; cg.font = '600 10px "JetBrains Mono", monospace'; cg.fillText(`DOWNLINK ${Math.round(r * 100)}%`, w - 112, 22);
+}
+(function capLoop() { drawCap(); requestAnimationFrame(capLoop); })();
+
+const ringLen = r => 2 * Math.PI * r;
+function setRing(el, r, pct) { el.setAttribute('stroke-dasharray', `${ringLen(r) * pct / 100} 999`); }
+function select(name) {
+  const s = [...sats, ...(kestrel ? [kestrel] : [])].find(x => x.name === name); if (!s) return; selected = name;
+  document.querySelectorAll('.row').forEach(r => r.classList.toggle('on', r.dataset.name === name));
+  $('dname').textContent = s.name; $('dsub').textContent = `${s.type} · ${s.alt.toLocaleString()} km · ${s.inc}°`;
+  $('dstat').textContent = s.first ? 'FIRST LIGHT' : 'NOMINAL'; $('dstat').className = 'status' + (s.first ? ' go' : '');
+  $('malt').innerHTML = `${s.alt.toLocaleString()}<small>km</small>`; $('mvel').innerHTML = `${(s.type === 'MEO' ? 3.9 : 7.59).toFixed(2)}<small>km/s</small>`;
+  $('mbat').innerHTML = `${s.bat}<small>%</small>`; $('mlink').innerHTML = `${s.link}<small>dBm</small>`; $('bbat').style.width = s.bat + '%';
+  $('pstation').textContent = s.st; $('coord').textContent = s.coord; capState = { img: s.img, reveal: 1 }; setRing($('dockring'), 38, s.pct);
+}
+select('Orion');
+
+// ---------- the mission card ----------
+window.openSat = async name => {
+  const s = sats.find(x => x.name === name) || sats[0]; select(s.name);
+  $('heroname').textContent = s.name; const hero = $('hero'), scrim = $('scrim'), done = $('done');
+  hero.style.transform = 'translate(0, 24px) scale(.96)'; scrim.classList.add('open'); done.style.pointerEvents = 'auto';
+  await tween(500, k => { scrim.style.opacity = k; hero.style.opacity = k; hero.style.transform = `translate(0, ${24 * (1 - k)}px) scale(${.96 + .04 * k})`; done.style.opacity = k; });
+  await tween(1300, k => { setRing($('heroring'), 40, s.pct * k); $('heropct').textContent = Math.round(s.pct * k) + '%'; });
+};
+$('done').onclick = async () => {
+  const hero = $('hero'), dock = $('dock').getBoundingClientRect(), a = hero.getBoundingClientRect(), done = $('done');
+  done.style.pointerEvents = 'none'; $('scrim').classList.remove('open');
+  const sx = dock.width / a.width, sy = dock.height / a.height;
+  await tween(900, k => { hero.style.transform = `translate(${(dock.left - a.left) * k}px, ${(dock.top - a.top) * k}px) scale(${1 + (sx - 1) * k}, ${1 + (sy - 1) * k})`; $('scrim').style.opacity = 1 - k; done.style.opacity = 1 - k * 2; }, eio);
+  hero.style.opacity = 0; hero.style.transform = '';
+};
+
+// ---------- launch flow ----------
+const sheet = $('sheet'), input = $('name');
+$('launch').onclick = () => { sheet.classList.add('open'); input.value = ''; setTimeout(() => input.focus(), 60); };
+$('cancel').onclick = () => sheet.classList.remove('open');
+$('go').onclick = () => { const name = input.value.trim() || 'Kestrel'; sheet.classList.remove('open'); input.blur(); startLaunch(name); };
+
+async function startLaunch(name) {
+  // turn the Earth so the pad faces us, then count down
+  const target = -Math.atan2(SITE[0], SITE[2]) - .42, from = view.rot, spin = view.spin; let to = target; while (to - from > Math.PI) to -= Math.PI * 2; while (to - from < -Math.PI) to += Math.PI * 2;
+  view.spin = 0; selected = null; document.querySelectorAll('.row').forEach(r => r.classList.remove('on'));
+  await tween(1100, k => { view.rot = from + (to - from) * k; view.zoom = 1 + .12 * k; view.cy = 322 + 18 * k; }, eio);
+  // freeze the pad in inertial space
+  const c = Math.cos(view.rot), s = Math.sin(view.rot); const p0 = [SITE[0] * c + SITE[2] * s, SITE[1], -SITE[0] * s + SITE[2] * c];
+  const east = norm(cross([0, 1, 0], p0)); const north = norm(cross(p0, east)); const dir = norm(east.map((v, i) => v * .72 + north[i] * .69));
+  // the pad is locked and ignition fills its ring on the globe (drawIgnition); then liftoff
+  launch = { t0: now(), lift: 1.6, burn: 3.6, p0, d: dir, th: 1.05, u0: 1.05, name };
+  await wait(launch.lift * 1000);
+  const tele = $('tele'); $('tname').textContent = name.toUpperCase();
+  tween(600, k => { tele.style.opacity = k; tele.style.transform = `translateY(${10 * (1 - k)}px)`; }, eo).then(() => {});
+  await tween(launch.burn * 1000, (e, k) => { const alt = Math.round(550 * (1 - Math.pow(1 - k, 2.2)));
+    $('talt').innerHTML = alt + '<small>km</small>'; $('tvel').innerHTML = (7.59 * Math.pow(k, .8)).toFixed(2) + '<small>km/s</small>'; $('tstage').textContent = k < .45 ? '1' : '2'; $('tprog').style.width = (100 * k).toFixed(1) + '%'; }, x => x);
+  // in orbit
+  kestrel = { name, type: 'LEO', alt: 550, inc: 51.6, img: 'delta', pct: 4, bat: 100, link: -66, st: 'Svalbard', coord: '64.02°N 18.31°W', r: 1.3, e1: launch.p0, e2: launch.d, u: launch.u0, w: .2, fleet: true, first: true };
+  tween(500, k => { tele.style.opacity = 1 - k; });
+  await wait(250);
+  $('toastname').textContent = name; $('toast').classList.add('show'); setTimeout(() => $('toast').classList.remove('show'), 3200);
+  addRow(kestrel, true); $('fleetn').textContent = '10'; count($('nactive'), 9, 10, 600);
+  select(name); capState = { img: 'delta', reveal: 0 }; $('caplbl').textContent = 'First light'; $('captime').textContent = 'live';
+  $('pstation').textContent = 'Svalbard'; tween(700, k => { view.zoom = 1.12 - .12 * k; view.cy = 340 - 18 * k; }, eio).then(() => { view.spin = spin; });
+  await wait(700);
+  await tween(3000, (e, k) => { capState.reveal = k; $('gb').textContent = (412.6 + k * 0.12).toFixed(1) + ' GB'; }, x => x);
+  $('captime').textContent = 'just now';
+}
+const count = (el, a, b, ms, fmt = v => Math.round(v).toLocaleString()) => tween(ms, k => { el.textContent = fmt(a + (b - a) * k); });
+
+// ---------- first light, full size ----------
+$('capbox').onclick = async () => {
+  const lb = $('lb'), box = $('capbox').getBoundingClientRect(); $('lbimg').src = `img/${capState.img}.jpg`; $('lbname').textContent = (kestrel && selected === kestrel.name ? kestrel.name : selected || 'ORION').toUpperCase();
+  const tx = (innerWidth - 960) / 2, ty = (innerHeight - 640) / 2 + 8; $('scrim').classList.add('open');
+  lb.style.pointerEvents = 'auto';
+  await tween(850, k => { const sx = box.width / 960 + (1 - box.width / 960) * k, sy = box.height / 640 + (1 - box.height / 640) * k;
+    lb.style.transform = `translate(${box.left + (tx - box.left) * k}px, ${box.top + (ty - box.top) * k}px) scale(${sx}, ${sy})`; lb.style.opacity = Math.min(1, k * 4); $('scrim').style.opacity = k; }, eio);
+};
+$('lb').onclick = async () => { const lb = $('lb'); $('scrim').classList.remove('open'); await tween(400, k => { lb.style.opacity = 1 - k; $('scrim').style.opacity = 1 - k; }); lb.style.pointerEvents = 'none'; };
+
+// ---------- top bar ----------
+const t0 = Date.now(); const base = 14 * 3600 + 32 * 60 + 7;
+(function clock() { const s = base + (Date.now() - t0) / 1000; const p = n => String(Math.floor(n)).padStart(2, '0'); $('clock').textContent = `${p(s / 3600 % 24)}:${p(s / 60 % 60)}:${p(s % 60)}.${Math.floor(s * 10 % 10)}`; requestAnimationFrame(clock); })();
+if (!HOLD) bootPanels();
+
+window.__orbit = { view, sats, select, get kestrel() { return kestrel; } };
+requestAnimationFrame(frame); requestAnimationFrame(drawSparks); requestAnimationFrame(drawTimeline);
+</script>
+</body>
+</html>

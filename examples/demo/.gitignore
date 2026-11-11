@@ -1,0 +1,7 @@
+out/
+film/out/
+film/node_modules
+# fonts carry their own licences: bring your own
+film/public/fonts/*.woff2
+film/public/audio/*.wav
+kit/

@@ -1,0 +1,435 @@
+{
+ "fps": 60,
+ "total": 36.0,
+ "bars": 0,
+ "moment": 15.82,
+ "audio": "audio/soundtrack.wav",
+ "look": {
+  "bg": "#06070F",
+  "glow": "#39E0C3",
+  "display": "\"JetBrains Mono\", monospace",
+  "mono": "\"JetBrains Mono\", monospace",
+  "fonts": [
+   {
+    "family": "JetBrains Mono",
+    "file": "fonts/JetBrainsMono-Bold.woff2",
+    "weight": 700
+   },
+   {
+    "family": "JetBrains Mono",
+    "file": "fonts/JetBrainsMono-Regular.woff2",
+    "weight": 400
+   }
+  ]
+ },
+ "intro": {
+  "to": 6.0,
+  "handoff": 0.8,
+  "image": "wordmark.png",
+  "box": [
+   440,
+   400,
+   1040,
+   225
+  ],
+  "over": "INTRODUCING",
+  "under": "LAUNCH FILMS FROM YOUR REAL APP",
+  "lock": 2.06,
+  "cut": 4.06,
+  "line": [
+   459,
+   558,
+   1454,
+   495
+  ],
+  "into": {
+   "cx": 947,
+   "cy": 523,
+   "r": 393
+  }
+ },
+ "shots": [
+  {
+   "id": "reveal",
+   "take": "reveal",
+   "frames": 379,
+   "from": 6.0,
+   "to": 10.6,
+   "t0": 0.1,
+   "speed": 1.0,
+   "cam": [
+    {
+     "T": 6.0,
+     "s": 1.285,
+     "fx": 1268,
+     "fy": 652,
+     "sx": 947,
+     "sy": 523
+    },
+    {
+     "T": 7.0,
+     "s": 1.32,
+     "fx": 1268,
+     "fy": 652,
+     "sx": 947,
+     "sy": 523
+    },
+    {
+     "T": 8.9,
+     "s": 1.0,
+     "fx": 1280,
+     "fy": 720,
+     "sx": 960,
+     "sy": 540
+    },
+    {
+     "T": 10.6,
+     "s": 1.04,
+     "fx": 1280,
+     "fy": 720,
+     "sx": 960,
+     "sy": 540
+    }
+   ]
+  },
+  {
+   "id": "name",
+   "take": "launch",
+   "frames": 1104,
+   "from": 10.6,
+   "to": 13.56,
+   "t0": 0.7,
+   "speed": 1.15,
+   "cam": [
+    {
+     "T": 10.6,
+     "s": 1.03,
+     "fx": 1280,
+     "fy": 720,
+     "sx": 960,
+     "sy": 540
+    },
+    {
+     "T": 11.05,
+     "s": 1.32,
+     "fx": 2150,
+     "fy": 180,
+     "sx": 1180,
+     "sy": 330
+    },
+    {
+     "T": 11.75,
+     "s": 1.75,
+     "fx": 1280,
+     "fy": 640,
+     "sx": 960,
+     "sy": 520
+    },
+    {
+     "T": 13.56,
+     "s": 1.82,
+     "fx": 1280,
+     "fy": 650,
+     "sx": 960,
+     "sy": 520
+    }
+   ]
+  },
+  {
+   "id": "liftoff",
+   "take": "launch",
+   "frames": 1104,
+   "from": 13.56,
+   "to": 20.56,
+   "t0": 4.06,
+   "speed": 1.0,
+   "cam": [
+    {
+     "T": 13.56,
+     "s": 1.15,
+     "fx": 1268,
+     "fy": 690,
+     "sx": 960,
+     "sy": 560
+    },
+    {
+     "T": 14.35,
+     "s": 1.7,
+     "fx": 1104,
+     "fy": 610,
+     "sx": 860,
+     "sy": 600
+    },
+    {
+     "T": 15.8,
+     "s": 1.78,
+     "fx": 1104,
+     "fy": 610,
+     "sx": 860,
+     "sy": 600
+    },
+    {
+     "T": 17.1,
+     "s": 1.0,
+     "fx": 1280,
+     "fy": 740,
+     "sx": 960,
+     "sy": 520
+    },
+    {
+     "T": 20.56,
+     "s": 1.05,
+     "fx": 1280,
+     "fy": 730,
+     "sx": 960,
+     "sy": 520
+    }
+   ]
+  },
+  {
+   "id": "firstlight",
+   "take": "launch",
+   "frames": 1104,
+   "from": 20.56,
+   "to": 24.56,
+   "t0": 10.92,
+   "speed": 1.0,
+   "cam": [
+    {
+     "T": 20.56,
+     "s": 2.2,
+     "fx": 2228,
+     "fy": 640,
+     "sx": 960,
+     "sy": 470
+    },
+    {
+     "T": 24.56,
+     "s": 2.32,
+     "fx": 2228,
+     "fy": 650,
+     "sx": 960,
+     "sy": 470
+    }
+   ]
+  },
+  {
+   "id": "image",
+   "take": "launch",
+   "frames": 1104,
+   "from": 24.56,
+   "to": 27.56,
+   "t0": 15.06,
+   "speed": 1.0,
+   "cam": [
+    {
+     "T": 24.56,
+     "s": 1.0,
+     "fx": 1280,
+     "fy": 720,
+     "sx": 960,
+     "sy": 540
+    },
+    {
+     "T": 27.56,
+     "s": 1.12,
+     "fx": 1280,
+     "fy": 740,
+     "sx": 960,
+     "sy": 540
+    }
+   ]
+  },
+  {
+   "id": "sweep",
+   "take": "sweep",
+   "frames": 290,
+   "from": 27.56,
+   "to": 32.06,
+   "t0": 0.25,
+   "speed": 1.0,
+   "cam": [
+    {
+     "T": 27.56,
+     "s": 1.22,
+     "fx": 880,
+     "fy": 700,
+     "sx": 960,
+     "sy": 560
+    },
+    {
+     "T": 32.06,
+     "s": 1.34,
+     "fx": 960,
+     "fy": 700,
+     "sx": 960,
+     "sy": 560
+    }
+   ]
+  }
+ ],
+ "lines": [
+  {
+   "text": "RECORDED FROM THE REAL APP",
+   "from": 9.2,
+   "to": 10.45,
+   "voice": "rise"
+  },
+  {
+   "text": "EVERY KEYSTROKE, EVERY FRAME",
+   "from": 11.8,
+   "to": 13.1,
+   "voice": "track"
+  },
+  {
+   "text": "60 FPS. NOTHING DROPPED",
+   "from": 16.3,
+   "to": 18.7,
+   "voice": "wipe"
+  },
+  {
+   "text": "THE CAMERA FINDS THE MOMENT",
+   "from": 21.2,
+   "to": 23.6,
+   "voice": "rise"
+  },
+  {
+   "text": "CUT LIKE A TRAILER",
+   "from": 28.0,
+   "to": 31.4,
+   "voice": "track"
+  }
+ ],
+ "end": {
+  "from": 32.06,
+  "to": 36.0,
+  "mark": "mark.png",
+  "wordmark": "wordmark.png",
+  "name": "matchcut",
+  "install": "npx skills add abundantbeing/matchcut",
+  "fact": "THIS FILM WAS MADE WITH IT"
+ },
+ "sfx": [
+  {
+   "t": 0.25,
+   "role": [
+    "whoosh-long"
+   ],
+   "gain": 0.45
+  },
+  {
+   "t": 2.06,
+   "role": "hit",
+   "gain": 0.75
+  },
+  {
+   "t": 3.71,
+   "role": [
+    "whoosh-short"
+   ],
+   "gain": 0.4
+  },
+  {
+   "t": 4.06,
+   "role": "hit",
+   "gain": 0.7
+  },
+  {
+   "t": 4.56,
+   "role": [
+    "whoosh-long"
+   ],
+   "gain": 0.5
+  },
+  {
+   "t": 7.57,
+   "role": "hit",
+   "gain": 0.8
+  },
+  {
+   "t": 13.56,
+   "role": [
+    "land",
+    "hit"
+   ],
+   "gain": 0.4
+  },
+  {
+   "t": 14.25,
+   "role": "tick-crisp",
+   "gain": 0.3
+  },
+  {
+   "t": 14.78,
+   "role": [
+    "land",
+    "tick-crisp"
+   ],
+   "gain": 0.45
+  },
+  {
+   "t": 15.25,
+   "role": [
+    "whoosh-long"
+   ],
+   "gain": 0.55
+  },
+  {
+   "t": 15.82,
+   "role": "hit",
+   "gain": 0.7
+  },
+  {
+   "t": 19.42,
+   "role": [
+    "land",
+    "hit"
+   ],
+   "gain": 0.55
+  },
+  {
+   "t": 20.56,
+   "role": [
+    "land",
+    "hit"
+   ],
+   "gain": 0.4
+  },
+  {
+   "t": 20.66,
+   "role": "tick-crisp",
+   "gain": 0.3
+  },
+  {
+   "t": 21.71,
+   "role": "tick-crisp",
+   "gain": 0.3
+  },
+  {
+   "t": 23.51,
+   "role": [
+    "land",
+    "tick-crisp"
+   ],
+   "gain": 0.4
+  },
+  {
+   "t": 24.56,
+   "role": "hit",
+   "gain": 0.6
+  },
+  {
+   "t": 27.56,
+   "role": [
+    "land",
+    "hit"
+   ],
+   "gain": 0.45
+  },
+  {
+   "t": 32.06,
+   "role": "hit",
+   "gain": 0.95
+  }
+ ]
+}
