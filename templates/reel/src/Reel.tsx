@@ -16,6 +16,8 @@ const clamp = (v: number, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const lerp = (a: number, b: number, k: number) => a + (b - a) * k;
 const inOut = (k: number) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 const out = (k: number) => 1 - Math.pow(1 - k, 4);
+// the one overshoot in the film: the end-card mark lands past its size and settles, about 4 %, on the hit
+const land = (k: number) => 1 + 2.70158 * Math.pow(k - 1, 3) + 1.70158 * Math.pow(k - 1, 2);
 const prog = (T: number, from: number, dur: number) => clamp((T - from) / dur);
 const bump = (T: number, at: number, half: number) => clamp(1 - Math.abs(T - at) / half);
 
@@ -270,7 +272,7 @@ const EndCard: React.FC<{ T: number }> = ({ T }) => {
   const creep = 1 + 0.035 * prog(T, E.from, E.to - E.from);
   return (
     <AbsoluteFill style={{ background: BG, transform: `scale(${creep.toFixed(5)})`, opacity: 1 - inOut(prog(T, E.to - 0.9, 0.9)) }}>
-      {(E as { mark?: string }).mark && <Img src={staticFile((E as { mark?: string }).mark!)} style={{ position: 'absolute', left: W / 2 - 130, top: 110, width: 260, height: 260, objectFit: 'contain', opacity: a, transform: `scale(${(0.9 + 0.1 * a).toFixed(4)}) rotate(${((1 - a) * -6).toFixed(2)}deg)`, filter: `blur(${((1 - a) * 12).toFixed(1)}px)` }} />}
+      {(E as { mark?: string }).mark && <Img src={staticFile((E as { mark?: string }).mark!)} style={{ position: 'absolute', left: W / 2 - 130, top: 110, width: 260, height: 260, objectFit: 'contain', opacity: a, transform: `scale(${(0.6 + 0.4 * land(prog(T, E.from, 0.5))).toFixed(4)}) rotate(${((1 - a) * -6).toFixed(2)}deg)`, filter: `blur(${((1 - a) * 12).toFixed(1)}px)` }} />}
       {(E as { wordmark?: string }).wordmark ? (
         <Img src={staticFile((E as { wordmark?: string }).wordmark!)} style={{ position: 'absolute', left: W / 2 - 520, top: 400, width: 1040, height: 225, objectFit: 'contain', opacity: a, filter: `blur(${((1 - a) * 16).toFixed(1)}px)`, transform: `scale(${(0.94 + 0.06 * a).toFixed(4)})` }} />
       ) : (

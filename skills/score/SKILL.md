@@ -93,6 +93,9 @@ The demo film uses 43 cues.
   a few percent of pitch and up to 1.5 dB of level (`"pitch"` in each cue; `score.py` plays it), seeded with
   `--seed` so a re-run gives the same mix. `cues.py` ends by naming any file heard more than 4 times in 30 s: make
   more takes of that role.
+- **Every sound lands on its frame.** Recordings often open on a breath of room noise (some bundled clicks carry
+  50 to 160 ms of it). `score.py` starts each effect 3 ms before its attack, so a click is heard on the press, not
+  a tenth of a second after it. Whooshes keep their lead: they are built to swell into the cut.
 
 Three ways to the sounds, all named by role (`click_1.wav`, `key_4.wav`, `whoosh-short_2.wav`, `hit_1.wav`,
 `tail_1.wav`, `land_1.wav`, `tick-crisp_1.wav`):
@@ -120,6 +123,12 @@ make or generate must be loudest at that point. Check the result against the pic
 - You cannot hear it: measure. RMS per section, the level either side of every cut (a drop of several dB after the
   match cut means the band came in too thin), and the low end below 120 Hz against the mids. Say that you measured,
   not listened. Use a listening tool if one is available.
+- **Measure the render** before it goes out, the way a reference is measured:
+  `python assets/measure.py out/film.mp4 --tl src/tl.json` (or the soundtrack wav before a render). It prints the
+  pace (cuts per 10 s; brand launch films mostly sit at 0.5 to 4), loudness and true peak, the headroom, each hero
+  against the nearest sound that starts there (more than a frame and a half off is a lost hit), and the share of
+  cuts on a sound against what random cuts would score. Heroes landing is the rule; the share of the rest can sit
+  near chance.
 
 ## Voiceover (`assets/voiceover_mix.py`)
 

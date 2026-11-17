@@ -28,6 +28,8 @@ import numpy as np
 import soundfile as sf
 from scipy import signal
 
+from measure import headroom, loudness  # the meter, shared with measure.py (next to this file)
+
 SR = 48000
 ap = argparse.ArgumentParser()
 ap.add_argument('score')
@@ -274,6 +276,15 @@ for f in S.get('fx', []):  # recorded effects: {"file": "kit/click.wav", "t": 12
         missing += 1
         continue
     x, sr = sf.read(path, always_2d=True)
+    # a recording often starts with a breath of room noise (some bundled clicks carry 50 to 160 ms of it): start 3 ms
+    # before the attack, faded in, so the sound lands on its frame. Whooshes and risers keep their lead: they are built
+    # to swell into the moment.
+    if not os.path.basename(path).startswith(('whoosh', 'riser')) and len(x):
+        a = np.abs(x).max(1)
+        i = int(np.argmax(a > 0.1 * a.max()))
+        s = max(0, i - int(0.003 * sr))
+        x = x[s:].copy()
+        x[:i - s] *= np.linspace(0, 1, i - s)[:, None]  # only the noise before the attack fades in; the attack is kept
     rate = sr / SR * f.get('pitch', 1.0)  # pitch: a playback rate, as on a tape machine (1.03 = 3 % higher, shorter)
     if abs(rate - 1) > 1e-4:
         x = signal.resample(x, int(round(len(x) / rate)))
@@ -307,28 +318,9 @@ sf.write(args.out, out, SR, subtype='PCM_24')
 print(args.out, round(len(out) / SR, 2), 's, peak', round(20 * np.log10(np.abs(out).max()), 2), 'dBFS, rms', round(10 * np.log10((out ** 2).mean()), 2), 'dB')
 
 
-def loudness(x):
-    """integrated loudness (ITU-R BS.1770: K-weighting, 400 ms blocks, absolute and relative gates) and true peak"""
-    # the two published K-weighting biquads at 48 kHz (score.py always mixes at 48 kHz)
-    k1 = ([1.53512485958697, -2.69169618940638, 1.19839281085285], [1.0, -1.69065929318241, 0.73248077421585])
-    k2 = ([1.0, -2.0, 1.0], [1.0, -1.99004745483398, 0.99007225036621])
-    y = signal.lfilter(*k2, signal.lfilter(*k1, x, axis=0), axis=0)
-    n, hop = int(0.4 * SR), int(0.1 * SR)
-    z = np.array([(y[i:i + n] ** 2).mean(0).sum() for i in range(0, len(y) - n + 1, hop)])
-    lk = -0.691 + 10 * np.log10(z + 1e-12)
-    z = z[lk > -70]
-    rel = -0.691 + 10 * np.log10(z.mean()) - 10
-    z = z[-0.691 + 10 * np.log10(z) > rel]
-    tp = 20 * np.log10(np.abs(signal.resample_poly(x, 4, 1, axis=0)).max())
-    return -0.691 + 10 * np.log10(z.mean()), tp
-
-
 # headroom: the hits need room above the mix. Brand films sit about 12 to 16 dB peak-to-loudness; a lower number
 # means the limiter ate the hits, a higher one is a quiet, calm mix (fine; platforms turn quiet films up less than
-# they turn loud ones down)
+# they turn loud ones down). measure.py holds the meter and says the same of a finished render.
 lufs, tp = loudness(out)
-plr = tp - lufs
-print(f'{lufs:.1f} LUFS, true peak {tp:.1f} dBTP, peak-to-loudness {plr:.1f} dB: ' + (
-    f'the hits are squashed: lower rms_db by {12.5 - plr:.0f} dB and they come back' if plr < 12
-    else 'a quiet, open mix: fine for a calm film; raise rms_db a little if it must sit beside loud ones' if plr > 16
-    else 'room for the hits'))
+plr, says = headroom(lufs, tp)
+print(f'{lufs:.1f} LUFS, true peak {tp:.1f} dBTP, peak-to-loudness {plr:.1f} dB: {says}')

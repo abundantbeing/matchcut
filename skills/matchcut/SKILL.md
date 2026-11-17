@@ -59,8 +59,8 @@ be posted, and whether there is a cast or a mascot.
 7. **Cut** in Remotion with the reel template (the cold open goes in `tl.json` `opening`, the bars in `bars`), or render the product section on its own and let the person join it
    to their cold open in their editor (ask which before the last render).
 8. **Check**: a storyboard of every take, `npm run check`, a contact sheet of the render, the five questions in
-   `references/moves.md` asked again of what was rendered, the sound measured (heroes on the beat, 12 to 16 dB of
-   peak-to-loudness), then deliver.
+   `references/moves.md` asked again of what was rendered, the render measured with `measure.py` (in `score`: every
+   hero lands its hit, 12 to 16 dB of peak-to-loudness, a pace that suits the film), then deliver.
 
 ## Deliver
 

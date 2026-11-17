@@ -86,7 +86,8 @@ Copy the template, `npm install`, list your takes in `src/takes.ts`, write `src/
   first shape: centre and radius in frame pixels) and fade over the first shot for `handoff` seconds while the
   product's own entrance takes over. `over` and `under` are one short line each above and below the word.
 - **End card**: the mark, the name, the install line or URL, one true fact, creeping in about its centre while the
-  music rings out.
+  music rings out. The mark lands on the hit a little past its size and settles: the film's one overshoot. Every
+  other move eases in and out plainly, so this one reads as a landing, not a bounce.
 
 ## Check
 

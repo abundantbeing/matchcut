@@ -42,7 +42,7 @@ motion graphics that look like a slide deck. matchcut gives your agent the way a
   have a music generator (ElevenLabs Music, Suno, Udio, Stable Audio and others), a prompt written from your film's
   own timeline and mood, then the film's three to five hero moments landed on its beats. Effects on every click and
   cut, included (a public-domain kit, sounds made in code, or prompts for any sound-effect tool), never the same twice,
-  with a layered hit on each hero; a mix measured for loudness and headroom, and a trailer voiceover if you want one.
+  with a layered hit on each hero; a mix measured for loudness and headroom, every sound starting on its frame, a render measured before delivery (pace, loudness, heroes on their hits), and a trailer voiceover if you want one.
 
 ## Install
 
@@ -89,7 +89,7 @@ Brief your agent like a director:
 | [`keyframes`](skills/keyframes/SKILL.md) | Image prompts for film stills: style blocks that read as a real medium, a cast line-up first, composition rules, the hero object, three-frame moves for video models. Notes for GPT Image, Midjourney, Flux, Gemini and Seedream |
 | [`clip-prompts`](skills/clip-prompts/SKILL.md) | Video prompts that carry the whole story, first and last frames, lengths, and a table of fixes for extra limbs, duplicate characters, morphs and warped text. Guides for MiniMax, Grok, Seedance, Veo, Kling, Wan, Runway, Luma and LTX |
 | [`ui-reel`](skills/ui-reel/SKILL.md) | The recorder (slow-motion capture, 60 fps, redrawn cursor, phone takes, storyboards, rehearsal runs) and a Remotion template with a title intro made in code, the virtual camera, captions, cut blooms, a phone frame, an end card and a timeline check |
-| [`score`](skills/score/SKILL.md) | An original soundtrack written in code, or a song prompt for any music generator written from the film's timeline and mood plus a fitter that lands the hero moments on its beats; effects on every click and cut, included or prompted; a mix measured for headroom, a voiceover |
+| [`score`](skills/score/SKILL.md) | An original soundtrack written in code, or a song prompt for any music generator written from the film's timeline and mood plus a fitter that lands the hero moments on its beats; effects on every click and cut, included or prompted; a mix measured for headroom, a measure of the finished render, a voiceover |
 
 ## Why films go wrong, and what catches it
 
