@@ -6,7 +6,10 @@
 
 With a timeline it places the song so its strongest hit lands on the film's biggest moment (`--moment`, default
 the loudest hit in tl.json "sfx" between the first shot and the end card), prints the `track_at` / `track_from` for score.json, and
-lists every cut, the intro beats and the end card next to the nearest beat so you can move them onto it.
+lists every cut, the intro beats and the end card next to the nearest beat. The heroes (tl.json "heroes", the 3 to 5
+moments with the film's biggest sounds; by default the match cut, the "moment" and the end card) must land on a
+beat (or on the "and" between two beats, a pickup). Every other cut is free, as long as it is clearly on a beat
+or clearly off one: a near miss reads as a slip.
 Models only roughly follow the times in a prompt: measure, then cut the picture to the song.
 
 Needs numpy, scipy, soundfile and an ffmpeg (FFMPEG to pick one).
@@ -131,13 +134,31 @@ if args.tl:
         b = film_beats[np.argmin(np.abs(film_beats - tm))]
         return b, tm - b
 
-    print('\nfilm events vs the nearest beat (move the ones over 0.06 s):')
+    heroes = tl.get('heroes')
+    if heroes is None:  # the same default as check-tl.mjs and cues.py
+        heroes = [t for t in (tl['shots'][0]['from'] if tl.get('opening') else None, tl.get('moment'), tl.get('end', {}).get('from')) if t is not None]
     ev = [(f'cut into {s["id"]}', s['from']) for s in tl['shots'][1:]] + [('end card', tl['end']['from'])]
     if tl.get('intro'):
         ev = [('intro lock', tl['intro']['lock']), ('intro cut', tl['intro']['cut'])] + ev
+    if tl.get('opening'):
+        ev.append(('match cut', tl['shots'][0]['from']))
+    for h in heroes:  # a hero that is not a cut (a launch, a stamp) still gets its own line
+        if all(abs(h - tm) > 0.02 for _, tm in ev):
+            ev.append(('hero moment', h))
+    print('\nheroes land on a beat (move any over 0.06 s); other cuts are free, but on a beat or clearly off one:')
+    moves = 0
     for name, tm in sorted(ev, key=lambda e: e[1]):
         b, d = near(tm)
-        print(f'  {name:<22} {tm:6.2f} s   beat {b:6.2f} s   {"ok" if abs(d) <= 0.06 else f"off by {d:+.2f} s"}')
+        hero = any(abs(h - tm) <= 0.02 for h in heroes)
+        if hero:
+            half = abs(abs(d) - period / 2) <= 0.06  # on the "and" between two beats: a pickup, also a landing
+            verdict = 'ok' if abs(d) <= 0.06 else 'ok, on the "and" (a pickup)' if half else 'MOVE IT'
+            moves += abs(d) > 0.06 and not half
+        else:
+            verdict = 'on the beat' if abs(d) <= 0.06 else 'near miss: onto the beat or further off' if abs(d) <= 0.12 else 'free'
+        print(f'  {"HERO" if hero else "    "} {name:<20} {tm:6.2f} s   beat {b:6.2f} s   {d:+.2f} s   {verdict}')
+    print(f'  {len(heroes)} heroes, ' + (f'{moves} to move' if moves else 'all on the beat')
+          + ('; more than five and none of them is special' if len(heroes) > 5 else ''))
     song_end = dur + at
     if song_end < tl['total'] - 0.5:
         print(f'  the song ends at {song_end:.2f} s, before the film ({tl["total"]} s): end the film sooner or extend the song')

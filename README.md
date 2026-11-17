@@ -33,15 +33,16 @@ motion graphics that look like a slide deck. matchcut gives your agent the way a
   frame of every animation lands: 60 fps footage at twice the resolution, the cursor redrawn crisp, demo data that
   is never your real account.
 - **A virtual camera.** The edit pushes into what changes, holds, lands, and hides every cut in light, and every cut
-  lands on the action, never on a camera still travelling toward it (`npm run check` catches that). One timeline
-  file drives the picture, the captions and the music.
+  lands on the action, never on a camera still travelling toward it (`npm run check` catches that, and any caption
+  too short to read). One timeline file drives the picture, the captions and the music.
 - **A story, if you want one.** Stills from any image model with a cast that stays the same shot after shot, clips
   from any video model with prompts that carry the whole story, and the match cut: an object from the story lands
   flat to camera and the next frame is the same object alive in your app.
 - **Its own music.** An original score written in code to the film's timeline, nothing to sign up for. Or, if you
   have a music generator (ElevenLabs Music, Suno, Udio, Stable Audio and others), a prompt written from your film's
-  own timeline and mood, then the cut fitted to the song's beats. Effects on every click and cut, included (a public-domain kit,
-  sounds made in code, or prompts for any sound-effect tool), a measured mix, and a trailer voiceover if you want one.
+  own timeline and mood, then the film's three to five hero moments landed on its beats. Effects on every click and
+  cut, included (a public-domain kit, sounds made in code, or prompts for any sound-effect tool), never the same twice,
+  with a layered hit on each hero; a mix measured for loudness and headroom, every sound starting on its frame, a render measured before delivery (pace, loudness, heroes on their hits), and a trailer voiceover if you want one.
 
 ## Install
 
@@ -88,7 +89,7 @@ Brief your agent like a director:
 | [`keyframes`](skills/keyframes/SKILL.md) | Image prompts for film stills: style blocks that read as a real medium, a cast line-up first, composition rules, the hero object, three-frame moves for video models. Notes for GPT Image, Midjourney, Flux, Gemini and Seedream |
 | [`clip-prompts`](skills/clip-prompts/SKILL.md) | Video prompts that carry the whole story, first and last frames, lengths, and a table of fixes for extra limbs, duplicate characters, morphs and warped text. Guides for MiniMax, Grok, Seedance, Veo, Kling, Wan, Runway, Luma and LTX |
 | [`ui-reel`](skills/ui-reel/SKILL.md) | The recorder (slow-motion capture, 60 fps, redrawn cursor, phone takes, storyboards, rehearsal runs) and a Remotion template with a title intro made in code, the virtual camera, captions, cut blooms, a phone frame, an end card and a timeline check |
-| [`score`](skills/score/SKILL.md) | An original soundtrack written in code, or a song prompt for any music generator written from the film's timeline and mood plus a fitter that puts the cuts on its beats; effects on every click and cut, included or prompted; a measured mix, a voiceover |
+| [`score`](skills/score/SKILL.md) | An original soundtrack written in code, or a song prompt for any music generator written from the film's timeline and mood plus a fitter that lands the hero moments on its beats; effects on every click and cut, included or prompted; a mix measured for headroom, a measure of the finished render, a voiceover |
 
 ## Why films go wrong, and what catches it
 
@@ -101,7 +102,7 @@ Brief your agent like a director:
 | Characters change between shots | Each image prompt starts from scratch | One master prompt, a line-up first (`keyframes`) |
 | Generic AI-illustration look | No medium named | Style blocks with named works and rules (`keyframes`) |
 | Extra arms, duplicate people, melting bodies | Video models inventing what the still never showed | Single-image clips, LOCKED lines, cuts on motion (`clip-prompts`) |
-| Stock music that fights the cut | A track written for something else | A score written to the timeline, or a song prompted from it with the cuts moved onto its beats (`score`) |
+| Stock music that fights the cut | A track written for something else | A score written to the timeline, or a song prompted from it with the hero moments moved onto its beats (`score`) |
 | A transition that leads to nothing | Cutting wide, then panning to the subject | Cut into the action; `check-tl.mjs` fails the edit (`ui-reel`) |
 
 ## What it needs

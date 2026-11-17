@@ -29,6 +29,8 @@ ROLES = {
     'whoosh-long': ('a long cinematic whoosh rising toward a big moment, swelling then passing', 1.6, 2, 'loudest about 0.9 s in: it is placed 0.9 s before a big cut'),
     'hit': ('a heavy cinematic impact boom with a deep sub drop and a short tail', 2.5, 2, 'the impact at the very start'),
     'land': ('a soft deep thud of something settling firmly into place', 1.0, 2, 'the thud at the very start'),
+    'tail': ('an airy shimmering ring that blooms and hangs after a big impact, bright air and a soft glassy chord, no impact of its own',
+             1.8, 2, 'starts soft at once with no hit in it (it sits under one), rings for about 1.5 s; no sub bass'),
 }
 
 ap = argparse.ArgumentParser()
@@ -44,6 +46,10 @@ if args.tl:
     tl = json.load(open(args.tl, encoding='utf-8'))
     counts['whoosh-short'] = max(0, len(tl.get('shots', [])) - 1)
     counts['tick-crisp'] = len(tl.get('lines', []))
+    heroes = tl.get('heroes')
+    if heroes is None:
+        heroes = [h for h in (tl['shots'][0]['from'] if tl.get('opening') else None, tl.get('moment'), tl.get('end', {}).get('from')) if h is not None]
+    counts['tail'] = len(heroes)  # one tail per hero moment
     for e in tl.get('sfx', []):
         for r in (e['role'] if isinstance(e['role'], list) else [e['role']])[:1]:
             counts[r] = counts.get(r, 0) + 1

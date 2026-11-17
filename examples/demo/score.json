@@ -92,19 +92,25 @@
       "gain": 0.45
     },
     {
-      "file": "../../skills/score/assets/kit/hit_1.wav",
+      "file": "../../skills/score/assets/kit/hit_2.wav",
       "t": 2.06,
       "gain": 0.75
     },
     {
-      "file": "../../skills/score/assets/kit/whoosh-short_3.wav",
+      "file": "../../skills/score/assets/kit/whoosh-short_1.wav",
       "t": 3.71,
-      "gain": 0.4
+      "gain": 0.389,
+      "pitch": 1.0305
     },
     {
-      "file": "../../skills/score/assets/kit/hit_2.wav",
+      "file": "../../skills/score/assets/kit/hit_1.wav",
       "t": 4.06,
       "gain": 0.7
+    },
+    {
+      "file": "../../skills/score/assets/kit/tail_1.wav",
+      "t": 4.06,
+      "gain": 0.3
     },
     {
       "file": "../../skills/score/assets/kit/whoosh-long_2.wav",
@@ -112,87 +118,101 @@
       "gain": 0.5
     },
     {
-      "file": "../../skills/score/assets/kit/hit_1.wav",
+      "file": "../../skills/score/assets/kit/hit_2.wav",
       "t": 7.57,
       "gain": 0.8
     },
     {
-      "file": "../../skills/score/assets/kit/tick-crisp_1.wav",
+      "file": "../../skills/score/assets/kit/tick-crisp_2.wav",
       "t": 9.25,
-      "gain": 0.22
+      "gain": 0.255,
+      "pitch": 0.9976
     },
     {
-      "file": "../../skills/score/assets/kit/whoosh-short_1.wav",
+      "file": "../../skills/score/assets/kit/whoosh-short_3.wav",
       "t": 10.42,
-      "gain": 0.42
+      "gain": 0.468,
+      "pitch": 0.9868
     },
     {
-      "file": "../../skills/score/assets/kit/click_1.wav",
+      "file": "../../skills/score/assets/kit/click_2.wav",
       "t": 10.921,
-      "gain": 0.55
+      "gain": 0.53,
+      "pitch": 1.0315
     },
     {
-      "file": "../../skills/score/assets/kit/key_1.wav",
+      "file": "../../skills/score/assets/kit/key_3.wav",
       "t": 11.597,
-      "gain": 0.32
+      "gain": 0.369,
+      "pitch": 1.0058
     },
     {
       "file": "../../skills/score/assets/kit/key_2.wav",
       "t": 11.697,
-      "gain": 0.32
-    },
-    {
-      "file": "../../skills/score/assets/kit/key_3.wav",
-      "t": 11.809,
-      "gain": 0.32
-    },
-    {
-      "file": "../../skills/score/assets/kit/tick-crisp_2.wav",
-      "t": 11.85,
-      "gain": 0.22
-    },
-    {
-      "file": "../../skills/score/assets/kit/key_4.wav",
-      "t": 11.909,
-      "gain": 0.32
-    },
-    {
-      "file": "../../skills/score/assets/kit/key_5.wav",
-      "t": 11.992,
-      "gain": 0.32
-    },
-    {
-      "file": "../../skills/score/assets/kit/key_6.wav",
-      "t": 12.107,
-      "gain": 0.32
+      "gain": 0.313,
+      "pitch": 0.9685
     },
     {
       "file": "../../skills/score/assets/kit/key_1.wav",
+      "t": 11.809,
+      "gain": 0.326,
+      "pitch": 0.9822
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_3.wav",
+      "t": 11.85,
+      "gain": 0.244,
+      "pitch": 0.9862
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_2.wav",
+      "t": 11.909,
+      "gain": 0.281,
+      "pitch": 1.0229
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_3.wav",
+      "t": 11.992,
+      "gain": 0.329,
+      "pitch": 1.0091
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_1.wav",
+      "t": 12.107,
+      "gain": 0.309,
+      "pitch": 1.0054
+    },
+    {
+      "file": "../../skills/score/assets/kit/key_3.wav",
       "t": 12.217,
-      "gain": 0.32
+      "gain": 0.362,
+      "pitch": 0.9691
     },
     {
-      "file": "../../skills/score/assets/kit/click_2.wav",
+      "file": "../../skills/score/assets/kit/click_1.wav",
       "t": 13.12,
-      "gain": 0.55
+      "gain": 0.557,
+      "pitch": 0.9708
     },
     {
-      "file": "../../skills/score/assets/kit/whoosh-short_2.wav",
+      "file": "../../skills/score/assets/kit/whoosh-short_1.wav",
       "t": 13.38,
-      "gain": 0.42
+      "gain": 0.43,
+      "pitch": 0.9729
     },
     {
-      "file": "../../skills/score/assets/kit/land_2.wav",
+      "file": "../../skills/score/assets/kit/land_1.wav",
       "t": 13.56,
       "gain": 0.4
     },
     {
       "file": "../../skills/score/assets/kit/tick-crisp_3.wav",
       "t": 14.25,
-      "gain": 0.3
+      "gain": 0.295,
+      "pitch": 1.0056
     },
     {
-      "file": "../../skills/score/assets/kit/land_1.wav",
+      "file": "../../skills/score/assets/kit/land_2.wav",
       "t": 14.78,
       "gain": 0.45
     },
@@ -202,89 +222,108 @@
       "gain": 0.55
     },
     {
-      "file": "../../skills/score/assets/kit/hit_2.wav",
+      "file": "../../skills/score/assets/kit/hit_1.wav",
       "t": 15.82,
       "gain": 0.7
     },
     {
-      "file": "../../skills/score/assets/kit/tick-crisp_3.wav",
-      "t": 16.35,
-      "gain": 0.22
+      "file": "../../skills/score/assets/kit/tail_2.wav",
+      "t": 15.82,
+      "gain": 0.3
     },
     {
-      "file": "../../skills/score/assets/kit/land_2.wav",
+      "file": "../../skills/score/assets/kit/tick-crisp_1.wav",
+      "t": 16.35,
+      "gain": 0.205,
+      "pitch": 0.9714
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_1.wav",
       "t": 19.42,
       "gain": 0.55
     },
     {
-      "file": "../../skills/score/assets/kit/whoosh-short_3.wav",
+      "file": "../../skills/score/assets/kit/whoosh-short_2.wav",
       "t": 20.38,
-      "gain": 0.42
+      "gain": 0.427,
+      "pitch": 0.9912
     },
     {
-      "file": "../../skills/score/assets/kit/land_1.wav",
+      "file": "../../skills/score/assets/kit/land_2.wav",
       "t": 20.56,
       "gain": 0.4
     },
     {
-      "file": "../../skills/score/assets/kit/tick-crisp_1.wav",
-      "t": 20.66,
-      "gain": 0.3
-    },
-    {
-      "file": "../../skills/score/assets/kit/tick-crisp_1.wav",
-      "t": 21.25,
-      "gain": 0.22
-    },
-    {
       "file": "../../skills/score/assets/kit/tick-crisp_2.wav",
-      "t": 21.71,
-      "gain": 0.3
+      "t": 20.66,
+      "gain": 0.356,
+      "pitch": 1.0103
     },
     {
-      "file": "../../skills/score/assets/kit/land_2.wav",
+      "file": "../../skills/score/assets/kit/tick-crisp_3.wav",
+      "t": 21.25,
+      "gain": 0.238,
+      "pitch": 1.0263
+    },
+    {
+      "file": "../../skills/score/assets/kit/tick-crisp_3.wav",
+      "t": 21.71,
+      "gain": 0.288,
+      "pitch": 0.9852
+    },
+    {
+      "file": "../../skills/score/assets/kit/land_1.wav",
       "t": 23.51,
       "gain": 0.4
     },
     {
       "file": "../../skills/score/assets/kit/whoosh-short_1.wav",
       "t": 24.38,
-      "gain": 0.42
+      "gain": 0.438,
+      "pitch": 1.0045
     },
     {
-      "file": "../../skills/score/assets/kit/hit_1.wav",
+      "file": "../../skills/score/assets/kit/hit_2.wav",
       "t": 24.56,
       "gain": 0.6
     },
     {
       "file": "../../skills/score/assets/kit/click_3.wav",
       "t": 24.723,
-      "gain": 0.55
+      "gain": 0.558,
+      "pitch": 0.9944
     },
     {
-      "file": "../../skills/score/assets/kit/whoosh-short_2.wav",
+      "file": "../../skills/score/assets/kit/whoosh-short_3.wav",
       "t": 27.38,
-      "gain": 0.42
+      "gain": 0.41,
+      "pitch": 1.0126
     },
     {
-      "file": "../../skills/score/assets/kit/land_1.wav",
+      "file": "../../skills/score/assets/kit/land_2.wav",
       "t": 27.56,
       "gain": 0.45
     },
     {
       "file": "../../skills/score/assets/kit/tick-crisp_2.wav",
       "t": 28.05,
-      "gain": 0.22
+      "gain": 0.19,
+      "pitch": 1.0076
     },
     {
-      "file": "../../skills/score/assets/kit/land_1.wav",
+      "file": "../../skills/score/assets/kit/land_2.wav",
       "t": 32.06,
       "gain": 0.6
     },
     {
-      "file": "../../skills/score/assets/kit/hit_2.wav",
+      "file": "../../skills/score/assets/kit/hit_1.wav",
       "t": 32.06,
       "gain": 0.95
+    },
+    {
+      "file": "../../skills/score/assets/kit/tail_1.wav",
+      "t": 32.06,
+      "gain": 0.3
     }
   ]
 }

@@ -8,8 +8,9 @@ Writes WAVs named by role, several takes each, in the shape cues.py places them:
   key-return_N   a heavier enter key                   tick_N        a tiny bright interface tick
   tick-crisp_N   a caption tick, glassy                 whoosh-short_N  air into a cut; its peak sits 0.18 s in
   whoosh-long_N  a long rise into a big cut; peak 0.9 s in      hit_N   a cinematic boom: sub drop, body, air
-  land_N         a soft deep thud as something settles
-cues.py lays a whoosh 0.18 s (short) or 0.9 s (long) before the cut, so each whoosh peaks on the cut itself.
+  land_N         a soft deep thud as something settles  tail_N  the ring of a hero hit: air and a glassy chord, ~1.5 s
+cues.py lays a whoosh 0.18 s (short) or 0.9 s (long) before the cut, so each whoosh peaks on the cut itself, and a
+tail under the hit or land on every hero moment (tl.json "heroes"): the hit is the punch, the tail is the bloom.
 The bundled kit (assets/kit) mixes public-domain recordings with the whooshes and hits from this script.
 
 Needs numpy, scipy, soundfile.
@@ -131,6 +132,20 @@ def hit(v):
     return norm(fade_tail(room(x, 1.6, 0.22), 40), -2)
 
 
+def tail(v):
+    """the sound of the bloom: an airy ring that rises out of a hero hit and hangs ~1.5 s (no attack of its own)"""
+    t = t_(1.8)
+    n = len(t)
+    air = bp(R.normal(0, 1, (n, 2)), 1800, 9000) * 0.5 + bp(R.normal(0, 1, (n, 2)), 500, 1800) * 0.35
+    ring = np.zeros((n, 2))
+    for k, f in enumerate((880, 1318, 1975, 2637)):  # a soft glassy chord, detuned per side so it widens
+        for c in (0, 1):
+            ring[:, c] += np.sin(2 * np.pi * f * (1 + 0.003 * v + 0.0015 * (c * 2 - 1)) * t) * 0.18 / (k + 1)
+    shape = np.minimum(1, t / 0.012) * np.exp(-t * 3.2) * (0.6 + 0.4 * np.exp(-t * 9))
+    x = (air + ring * (0.5 + 0.5 * np.exp(-t * 1.5))[:, None]) * shape[:, None]
+    return norm(fade_tail(room(x, 1.2, 0.3), 120), -6)
+
+
 def land(v):
     t = t_(0.9)
     f = 48 + 60 * np.exp(-t * 18) + 3 * v
@@ -142,9 +157,9 @@ ROLES = {
     'click': lambda v: click(v), 'key': lambda v: key(v), 'key-return': lambda v: key(v, True),
     'tick': lambda v: tick(v), 'tick-crisp': lambda v: tick(v, True),
     'whoosh-short': lambda v: whoosh(0.18, 0.5, v), 'whoosh-long': lambda v: whoosh(0.9, 1.5, v),
-    'hit': lambda v: hit(v), 'land': lambda v: land(v),
+    'hit': lambda v: hit(v), 'tail': lambda v: tail(v), 'land': lambda v: land(v),
 }
-TAKES = {'click': 3, 'key': 6, 'key-return': 1, 'tick': 3, 'tick-crisp': 3, 'whoosh-short': 3, 'whoosh-long': 2, 'hit': 2, 'land': 2}
+TAKES = {'click': 3, 'key': 6, 'key-return': 1, 'tick': 3, 'tick-crisp': 3, 'whoosh-short': 3, 'whoosh-long': 2, 'hit': 2, 'tail': 2, 'land': 2}
 
 os.makedirs(args.out, exist_ok=True)
 want = set(args.roles.split(',')) if args.roles else set(ROLES)

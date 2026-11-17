@@ -3,6 +3,7 @@
   "total": 40,
   "bars": 0,
   "audio": "",
+  "heroes": [12, 32],
   "look": {
     "bg": "#05061A",
     "glow": "#7C8CFF",
