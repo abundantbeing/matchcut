@@ -9,23 +9,31 @@ into film time through the shot's t0 and speed, and lays:
   click on every press          key on every keystroke      whoosh into every cut
   hit on the match cut          tick when a caption lands   land on the end card
   plus the story sounds listed in tl.json "sfx" (a countdown, a launch, a finish)
+The heroes (tl.json "heroes", 3 to 5 moments; by default the match cut, the "moment" and the end card) get the film's
+biggest sound in two layers on the same frame: the hit (or land) for the punch, a tail for the bloom. Nothing else
+gets a tail, so the heroes stay special. Small repeated sounds (clicks, keys, ticks, short whooshes) never play the
+same way twice: a different take than last time, a few percent of pitch and up to 1.5 dB of level, seeded (--seed)
+so a re-run gives the same mix. score.py plays the "pitch" field.
 Sounds come from a kit folder of WAV files named by role (click_1.wav, key_3.wav, whoosh-short_2.wav, hit_1.wav,
 land_1.wav, tick_1.wav ...). With no kit given, the bundled kit next to this script is used (public-domain
 recordings plus whooshes and hits made in code); a kit you give is used first and the bundled one fills any role it
 lacks. Make a kit fully in code with make_kit.py, or prompt one from any sound-effect generator with sfx_prompts.py.
-Takes alternate between numbered files so repeats never sound identical.
+It ends with how often each file plays; more than 4 times in 30 s is worth more takes (make_kit.py or sfx_prompts.py).
 """
 import argparse
 import glob
 import json
 import os
+import random
 import re
+import sys
 
 ap = argparse.ArgumentParser()
 ap.add_argument('tl')
 ap.add_argument('scenes')
 ap.add_argument('kit', nargs='?', help='your kit folder (default: the bundled kit)')
 ap.add_argument('--into', help='write the cues into this score.json "fx" (replacing it)')
+ap.add_argument('--seed', type=int, default=7, help='the scatter of pitch, level and takes (default 7)')
 a = ap.parse_args()
 tl = json.load(open(a.tl, encoding='utf-8'))
 base = os.path.dirname(os.path.abspath(a.into)) if a.into else os.getcwd()
@@ -47,25 +55,32 @@ for folder in [d for d in (a.kit, BUNDLED) if d]:
         found.setdefault(re.sub(r'_\d+$', '', os.path.splitext(os.path.basename(f))[0]), []).append(rel(f))
     for role, files in found.items():
         kit.setdefault(role, files)
-used = {}
+rng = random.Random(a.seed)
+last = {}
+SCATTER = {'click', 'key', 'key-return', 'tick', 'tick-crisp', 'whoosh-short'}  # the small sounds that repeat
 
 
 def pick(*roles):
     for r in roles:
         if r in kit:
-            i = used.get(r, 0)
-            used[r] = i + 1
-            return kit[r][i % len(kit[r])]
-    return None
+            takes = [f for f in kit[r] if f != last.get(r)] or kit[r]  # never the same take twice in a row
+            last[r] = rng.choice(takes)
+            return r, last[r]
+    return None, None
 
 
 fx = []
 
 
 def add(t, gain, *roles):
-    f = pick(*roles)
-    if f is not None and t >= 0:
-        fx.append({'file': f, 't': round(t, 3), 'gain': gain})
+    r, f = pick(*roles)
+    if f is None or t < 0:
+        return
+    cue = {'file': f, 't': round(t, 3), 'gain': gain, 'role': r}
+    if r in SCATTER:  # about +-3.5 % of pitch and +-1.5 dB, so forty keystrokes are forty different keystrokes
+        cue['pitch'] = round(2 ** (rng.uniform(-0.6, 0.6) / 12), 4)
+        cue['gain'] = round(gain * 10 ** (rng.uniform(-1.5, 1.5) / 20), 3)
+    fx.append(cue)
 
 
 shots = tl['shots']
@@ -102,11 +117,30 @@ if 'end' in tl:
 for e in tl.get('sfx', []):
     roles = e['role'] if isinstance(e['role'], list) else [e['role']]
     add(e['t'], e.get('gain', 0.5), *roles)
+# the heroes: a hit (or land) and a tail on the same frame. A hero the timeline already gave a hit keeps it.
+heroes = tl.get('heroes')
+if heroes is None:  # the same default as check-tl.mjs and song_fit.py
+    heroes = [h for h in (shots[0]['from'] if opening else None, tl.get('moment'), tl.get('end', {}).get('from')) if h is not None]
+for h in heroes:
+    if not any(abs(c['t'] - h) <= 0.03 and c['role'] in ('hit', 'land') for c in fx):
+        add(h, 0.7, 'hit', 'land')
+    add(h, 0.3, 'tail')
 fx.sort(key=lambda f: f['t'])
+# how often each file plays: a file heard more than 4 times in 30 s starts to sound like a loop
+crowded = {}
+for c in fx:
+    n = sum(1 for d in fx if d['file'] == c['file'] and 0 <= d['t'] - c['t'] < 30)
+    crowded[c['role']] = max(crowded.get(c['role'], 0), n)
+crowded = {r: n for r, n in crowded.items() if n > 4}
+for c in fx:
+    del c['role']
+if crowded:
+    print('busiest files (plays in 30 s): ' + ', '.join(f'{r} {n} ({len(kit[r])} take' + 's' * (len(kit[r]) > 1) + ')' for r, n in sorted(crowded.items()))
+          + '; the scatter hides some of it, more takes hide the rest', file=sys.stderr)
 if a.into:
     score = json.load(open(a.into, encoding='utf-8'))
     score['fx'] = fx
-    json.dump(score, open(a.into, 'w', encoding='utf-8'), indent=2)
+    json.dump(score, open(a.into, 'w', encoding='utf-8', newline='\n'), indent=2)
     print(f'{len(fx)} cues into {a.into}')
 else:
     print(json.dumps(fx, indent=1))

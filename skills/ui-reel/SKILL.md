@@ -57,8 +57,8 @@ Copy the template, `npm install`, list your takes in `src/takes.ts`, write `src/
 
 - **Everything in `tl.json`, in seconds**: `intro` (below), `opening` (generated stills or clips before the product, each pushing in
   about `ox, oy`), shots (`take`, `from`, `to`, `t0` = where in the take to start, `speed`, `cam` keys, `phone`),
-  captions, end card (`mark`, `wordmark` or `name`, `install`, `fact`), `bars`, `audio`, `look`, and `sfx` (story
-  sounds for `cues.py`).
+  captions, end card (`mark`, `wordmark` or `name`, `install`, `fact`), `bars`, `audio`, `look`, `sfx` (story
+  sounds for `cues.py`) and `heroes` (below).
 - **Camera keys** `{T, s, fx, fy, sx, sy}`: zoom `s`, the footage point `(fx, fy)` (2560 x 1440 pixels) placed at
   screen `(sx, sy)`. Eased in and out, zoom in log space so a push reads as one move. One job per shot: push to what
   changes, hold, land. No drift.
@@ -68,8 +68,15 @@ Copy the template, `npm install`, list your takes in `src/takes.ts`, write `src/
   already framed on what the shot is about (its first camera key), and the shot starts (`t0`) just before that thing
   moves. Never cut wide and then pan or push to the subject, and never cut while the thing it leads to has not started
   yet: hold the outgoing shot instead. `npm run check` runs `check-tl.mjs`, which fails a shot whose first camera move
-  after the cut travels more than 300 px or 1.6x over more than 0.6 s. Put cuts on the song's beats.
-- **Captions**: 2 to 6 plain words, one per shot, voices rotating (rise, track, wipe), over a low scrim.
+  after the cut travels more than 300 px or 1.6x over more than 0.6 s.
+- **Heroes land on the music; the rest breathe.** `heroes` lists the 3 to 5 moments that carry the film (the match
+  cut, the payoff, the end card, one product moment that changes everything), in seconds. Those land exactly on a beat
+  and get the biggest sounds. Every other cut is free: on a beat or clearly off one, never a near miss. Locking every
+  cut to the grid makes a film tick like a metronome and leaves nothing special. Without the key, the match cut, the
+  `moment` and the end card are the heroes. `song_fit.py` (in `score`) says which heroes to move.
+- **Captions**: 2 to 6 plain words, one per shot, voices rotating (rise, track, wipe), over a low scrim. A caption
+  takes about 0.3 s to land, then needs 0.8 s held, or 0.18 s a word if that is longer; `npm run check` fails one
+  that leaves too soon. Hold it longer or cut words.
 - **The match cut** from a cold open: the first camera key frames the hero object exactly where the last generated
   frame leaves it. Measure both in pixels, set the key, bloom over the cut, carry the letterbox `bars` and open them. Or give
   the last still `dissolve` (seconds): no bloom, the still fades out over the product's own entrance.
@@ -85,7 +92,8 @@ Copy the template, `npm install`, list your takes in `src/takes.ts`, write `src/
 
 - A storyboard of every take before encoding (`storyboard.py`). It caught the `rAF` clock bug: a progress ring
   counting to negative percentages.
-- `npm run check` (types), a still at each caption, then a contact sheet of the render at the caption times.
+- `npm run check` (types, cuts that travel, captions too short to read, heroes), a still at each caption, then a
+  contact sheet of the render at the caption times.
 - Measure the sound (`score`), and watch the 720p preview once end to end.
 
 ## Pitfalls

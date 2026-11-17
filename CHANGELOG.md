@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- **Heroes:** a film names its 3 to 5 hero moments (`tl.json` `heroes`; by default the match cut, the `moment` and the end card). They land exactly on the music with the biggest sounds; every other cut is free to breathe. `song_fit.py` marks the heroes to move (a pickup on the "and" counts as landed) and flags only near misses among the other cuts; `check-tl.mjs` fails more than five or one outside the film.
+- **score:** each hero gets a layered sound: the hit (or land) for the punch and a new `tail` role for the bloom (made by `make_kit.py`, two takes in the bundled kit, a prompt in `sfx_prompts.py`). Clicks, keys, ticks and short whooshes never play the same way twice: a different take, a little pitch and level, seeded (`cues.py --seed`, played by `score.py` as `"pitch"`). `cues.py` names any file heard more than 4 times in 30 s. `score.py` measures its own mix (BS.1770 loudness, true peak) and reports the peak-to-loudness ratio, aiming for 12 to 16 dB and saying how far to lower `rms_db` when the hits are squashed.
+- **ui-reel:** `check-tl.mjs` fails a caption that leaves before it can be read (0.3 s to land, then 0.8 s or 0.18 s a word, whichever is longer).
+- **matchcut:** `references/moves.md`, the house moves for each beat (cold open, match cut, title intro, product, payoff, end card), five questions to ask of the beats and again of the render, and how to turn a film the person loves into something of our own.
+- **examples/demo:** names its heroes; `score.json` cues regenerated with the tails and scatter. The committed `demo.mp4` keeps its original mix.
+
 ## 0.1.0 (2026-11-14)
 
 - **matchcut:** the front door. Three films (product reel, matchcut film, story short), the beats, the run, delivery formats and the letterbox spec.

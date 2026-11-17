@@ -32,7 +32,10 @@ be posted, and whether there is a cast or a mascot.
 
 1. **Find the hero object.** One thing that exists in the product and could exist in a story. Render or screenshot
    the real one at full size, front and back if it has two. The film is built around this object.
-2. **Write the beats** in one short message and get a yes. For a matchcut film:
+2. **Write the beats** in one short message and get a yes. Offer a move for each beat from `references/moves.md`,
+   name the 3 to 5 **heroes** (the moments that land exactly on the music with the biggest sounds: usually the match
+   cut, the payoff and the end card), and answer its five questions in a line each before sending. For a matchcut
+   film:
 
    | Time | Beat |
    |---|---|
@@ -51,10 +54,13 @@ be posted, and whether there is a cast or a mascot.
    and place the last generated frame leaves it.
 5. **Clips** (`clip-prompts`): one self-contained prompt per clip, generated at the model's shortest useful length
    and trimmed in the edit.
-6. **Score** (`score`): written to the same timeline, a stop before the match cut, effects on clicks and cuts.
+6. **Score** (`score`): written to the same timeline, a stop before the match cut, effects on clicks and cuts, the
+   heroes on the beat with a hit and a tail each, everything else free to breathe.
 7. **Cut** in Remotion with the reel template (the cold open goes in `tl.json` `opening`, the bars in `bars`), or render the product section on its own and let the person join it
    to their cold open in their editor (ask which before the last render).
-8. **Check**: a storyboard of every take, a contact sheet of the render, the sound measured, then deliver.
+8. **Check**: a storyboard of every take, `npm run check`, a contact sheet of the render, the five questions in
+   `references/moves.md` asked again of what was rendered, the sound measured (heroes on the beat, 12 to 16 dB of
+   peak-to-loudness), then deliver.
 
 ## Deliver
 

@@ -65,8 +65,10 @@ python assets/song_fit.py song.mp3 --tl film/src/tl.json
 4. **Fit the cut to the song, never the song to the cut.** Models only roughly follow times. `song_fit.py` measures
    the tempo, beat grid, bar lines and strongest hits, puts the biggest moment on the nearest bar line (or `--at` to
    check a placement you chose, such as a strong pickup just before the bar), and lists every cut, the intro beats
-   and the end card against the nearest beat: move each one that is off by more than 0.06 s. Then set `track` and
-   `track_at` in `score.json`, run `cues.py` and `score.py` as usual, and measure the mix.
+   and the end card against the nearest beat. The heroes (`tl.json` `heroes`, 3 to 5 moments) must land: on a beat,
+   or on the "and" between two as a pickup; move any marked MOVE IT. Every other cut is free. Leave it where the
+   picture wants it, on a beat or clearly off one, and nudge only a near miss (0.06 to 0.12 s off), which reads as a
+   slip. Then set `track` and `track_at` in `score.json`, run `cues.py` and `score.py` as usual, and measure the mix.
 5. **Licence.** Keep the song out of public repos, and check the person's plan allows the use they have in mind
    (some free tiers are non-commercial or need a credit).
 
@@ -82,11 +84,21 @@ python assets/cues.py film/src/tl.json film/public/scenes kit/ --into score.json
 It maps every press and keystroke in the takes into film time and lays a click or key on each, a whoosh into every
 cut, a hit on the match cut, a tick as each caption lands and a land on the end card. Sounds the takes cannot show
 (a lock, a launch, a download finishing) go in `tl.json` `sfx` as `{"t", "role", "gain"}` and land with the rest.
-The demo film uses 40 cues. Three ways to the sounds, all named by role (`click_1.wav`, `key_4.wav`,
-`whoosh-short_2.wav`, `hit_1.wav`, `land_1.wav`, `tick-crisp_1.wav`):
+The demo film uses 43 cues.
+
+- **Heroes get two layers.** On each hero moment the hit (or land) is the punch and a `tail` under it is the bloom:
+  air and a soft glassy ring that hangs about 1.5 s. Only heroes get a tail and only hits carry sub, so the 3 to 5
+  moments that matter sound bigger than everything else without the mix getting louder.
+- **Nothing plays the same way twice.** Clicks, keys, ticks and short whooshes take a different file than last time,
+  a few percent of pitch and up to 1.5 dB of level (`"pitch"` in each cue; `score.py` plays it), seeded with
+  `--seed` so a re-run gives the same mix. `cues.py` ends by naming any file heard more than 4 times in 30 s: make
+  more takes of that role.
+
+Three ways to the sounds, all named by role (`click_1.wav`, `key_4.wav`, `whoosh-short_2.wav`, `hit_1.wav`,
+`tail_1.wav`, `land_1.wav`, `tick-crisp_1.wav`):
 
 - **The bundled kit** (`assets/kit`, the default): public-domain recordings for clicks, keys, ticks and lands, and
-  whooshes and hits made in code, levelled to sit right at the gains `cues.py` uses. Nothing to download.
+  whooshes, hits and tails made in code, levelled to sit right at the gains `cues.py` uses. Nothing to download.
 - **Made in code** (`make_kit.py kit/`): the whole kit synthesized, for a different character or a seed of its own.
   Whooshes and hits read as the real thing; keys and lands are thinner than recordings.
 - **From a sound-effect generator** (`sfx_prompts.py --style cinematic --tl film/src/tl.json --out kit-prompts.md`):
@@ -98,8 +110,13 @@ make or generate must be loudest at that point. Check the result against the pic
 
 ## The mix
 
-- `score.py` levels to -18 dB RMS by default (`rms_db` in score.json) with a -1.5 dBFS ceiling, which lands near -14 LUFS integrated, the usual target for social video
-  (measure with `ffmpeg -af ebur128` or `pyloudnorm`).
+- `score.py` levels to -18 dB RMS by default (`rms_db` in score.json) under a -1.5 dBFS ceiling, which lands near
+  -14 LUFS, then measures itself: integrated loudness, true peak, and the **peak-to-loudness ratio**. That ratio is
+  the room the hits have above the mix. Aim for 12 to 16 dB. Under 12 the ceiling is eating the hits: lower
+  `rms_db` (it says by how much) and they come back. Over 16 is a quiet, open mix, fine for a calm film. Louder is
+  not better: platforms turn a loud film down to their level anyway, and a squashed one stays squashed. -14 LUFS is
+  the loud end of the range, not a target to push to. Check it independently with
+  `ffmpeg -af ebur128=peak=true`.
 - You cannot hear it: measure. RMS per section, the level either side of every cut (a drop of several dB after the
   match cut means the band came in too thin), and the low end below 120 Hz against the mids. Say that you measured,
   not listened. Use a listening tool if one is available.
